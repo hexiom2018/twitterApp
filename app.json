@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "YouNewsed Report News",
+    "description": "This project is really great.",
+    "slug": "digitmania",
+    "privacy": "public",
+    "sdkVersion": "28.0.0",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "version": "1.7.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#dd0005"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 5000
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "facebookAppId": "2196250970662645",
+    "facebookDisplayName": "YouNewsed Report News",
+    "facebookScheme": "fb2196250970662645",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.younewsed.younewsedreport",
+      "config": {
+        "googleMapsApiKey": "AIzaSyD3eIGDq9VtN5YQEvizhaOCJv3HbgLhwi4",
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.223372639224-uq5accrlp53objd3710jdmfnoj0qilk4"
+        }
+      }
+    },
+    "android": {
+      "package": "com.younewsed.younewsedreport",
+      "config": {
+        "googleSignIn": {
+          "apiKey": "AIzaSyBPcJBQ1ldftFDVfsJoyx01FqQRapAtOLw"
+        },
+        "googleMaps": {
+          "apiKey": "AIzaSyBPcJBQ1ldftFDVfsJoyx01FqQRapAtOLw"
+        }
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "androidStatusBar": {
+      "barStyle": "dark-content",
+      "backgroundColor": "#dd0005"
+    }
+  }
+}
