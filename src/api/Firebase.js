@@ -1,12 +1,14 @@
 import * as firebase from 'firebase';
 
 var config = {
-  apiKey: "AIzaSyAqU_ru39jWoSBVDmMtKM42aDIO6dC2814",
-  authDomain: "signin-b93b6.firebaseapp.com",
-  databaseURL: "https://signin-b93b6.firebaseio.com",
-  projectId: "signin-b93b6",
-  storageBucket: "signin-b93b6.appspot.com",
-  messagingSenderId: "320714521562"
+  apiKey: "AIzaSyCeakcAQFNaxbZ-Xnfu_23q5z7zyLz3yiI",
+  authDomain: "client-b648f.firebaseapp.com",
+  databaseURL: "https://client-b648f.firebaseio.com",
+  projectId: "client-b648f",
+  storageBucket: "client-b648f.appspot.com",
+  messagingSenderId: "187936954064"
 };
 firebase.initializeApp(config);
+
+
 export default firebase;

@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Image, SafeAreaView, Dimensions, ScrollView, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Platform, Image, SafeAreaView, Dimensions, Alert, ScrollView, StyleSheet } from 'react-native';
 import { Container, Picker, H1, Form, Item, CheckBox, Label, Input, Button, Text, Content, Icon, Textarea, Left, Body, Header, Right, Title } from 'native-base';
 import { reduxForm, Field, formValueSelector } from 'redux-form';
 import { connect } from 'react-redux';
-import Expo, { Video,ImagePicker , Permissions ,Constants } from 'expo';
+import Expo, { Video, ImagePicker, Location, Permissions, Constants } from 'expo';
 import moment from 'moment';
+import CameraExample from '../component/CreatePosts/Camera'
 import { DrawerActions } from 'react-navigation';
+import { bindActionCreators } from 'redux';
+import { GetUserLocation } from '../actions/getLocationAction'
 import { Bar } from 'react-native-progress';
 import { createPostAction } from '../actions/PostsActions';
-import Modal from "react-native-modal"; 
+import Modal from "react-native-modal";
 import { __await } from 'tslib';
 const { width } = Dimensions.get("screen")
 
@@ -32,7 +35,7 @@ const MediaPicker = ({ input: { onChange, value, ...inputProps }, ...restProps, 
         <View style={{ width: '100%', height: 128, backgroundColor: '#FFF', borderRadius: 3 }} >
             <TouchableOpacity style={{ height: "96%", width: "98%", margin: "1%", borderColor: 'rgb(78, 78, 79)', borderWidth: 1, borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', borderRadius: 5, }} onPress={() => { onPress(onChange) }}>
                 <Icon name='ios-camera' style={{ fontSize: 48, color: 'rgb(78, 78, 79)' }} />
-                <Text style={{ color: 'rgb(78, 78, 79)' }}>Add Photo Or Video</Text>
+                <Text style={{ color: 'rgb(78, 78, 79)' }}>Add Photo</Text>
             </TouchableOpacity>
         </View>
     </Item>
@@ -97,16 +100,16 @@ submit = (values, dispatch, props) => {
 }
 const styles = StyleSheet.create({
     container: {
-      paddingTop: 150,
-      minHeight: 1000,
+        paddingTop: 150,
+        minHeight: 1000,
     },
     paragraph: {
-      marginHorizontal: 15,
-      marginTop: 30,
-      fontSize: 18,
-      color: '#34495e',
+        marginHorizontal: 15,
+        marginTop: 30,
+        fontSize: 18,
+        color: '#34495e',
     },
-  });
+});
 class CreatePostScreen extends Component {
     state = {
         country: 'usa',
@@ -126,72 +129,107 @@ class CreatePostScreen extends Component {
         await Permissions.askAsync(Permissions.CAMERA_ROLL);
         // you would probably do something to verify that permissions
         // are actually granted, but I'm skipping that for brevity
-      };
-    
-      useLibraryHandler = async () => {
+    };
+
+    useLibraryHandler = async () => {
         await this.askPermissionsAsync();
         let result = await ImagePicker.launchImageLibraryAsync({
-          allowsEditing: true,
-          aspect: [4, 3],
-          base64: false,
+            allowsEditing: true,
+            aspect: [4, 3],
+            base64: false,
         });
         this.setState({ result });
-      };
-    
-      useCameraHandler = async () => {
+    };
+
+    useCameraHandler = async () => {
         await this.askPermissionsAsync();
         let result = await ImagePicker.launchCameraAsync({
-          allowsEditing: true,
-          aspect: [4, 3],
-          base64: false,
+            allowsEditing: true,
+            aspect: [4, 3],
+            base64: false,
         });
         this.setState({ result });
-      };
+    };
 
+    _getLocationAsync = async () => {
+        // const { status } = await Expo.Permissions.getAsync(Expo.Permissions.LOCATION);
 
-    async componentDidMount() {
-
-
-        const { status } = await Expo.Permissions.getAsync(Expo.Permissions.LOCATION);
-       
-
-
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
         if (status !== 'granted') {
-            const { status } = await Expo.Permissions.askAsync(Expo.Permissions.LOCATION)
-            if (status !== 'granted') {
-                alert("cannot show photos on the map");
-            }
+            this.setState({
+                errorMessage: 'Permission to access location was denied',
+            });
+            Alert.alert(
+                'Alert',
+                'Permission to access location was denied',
+                { cancelable: false }
+            )
         }
 
-        try {
-            const location = Expo.Location.getCurrentPositionAsync();
-            const { coords } = await location
+        let location = await Location.getCurrentPositionAsync({});
+        this.setState({ location });
+        console.log(location, 'your location coords')
+        this.props.change('lat', location.coords.latitude);
+        this.props.change('lng', location.coords.longitude);
+        this.props.change('date', moment.now());
+    };
 
-            // lat and long of default USA San Francisco
-            coords.latitude = 37.773972;
-            coords.longitude = -122.431297;
+    componentDidMount() {
 
-            this.props.change('lat', coords.latitude);
-            this.props.change('lng', coords.longitude);
-            this.props.change('date', moment.now());
-            console.log('coords', coords)
-        } catch (error) {
-            console.error(error)
-            alert("cannot find your location ")
-        }}
+        if (Platform.OS === 'android' && !Constants.isDevice) {
+            this.setState({
+                errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
+            });
+        } else {
+            this._getLocationAsync();
+            const { GetUserLocation } = this.props.actions
+            console.log(this.props, 'props here')
+            // GetUserLocation()
+
+        }
+
+
+
+        // if (status !== 'granted') {
+        //     const { status } = await Expo.Permissions.askAsync(Expo.Permissions.LOCATION)
+        //     if (status !== 'granted') {
+        //         alert("cannot show photos on the map");
+        //     }
+        // }
+
+        // try {
+        //     const location = Expo.Location.getCurrentPositionAsync();
+        //     const { coords } = await location
+        //     console.log(coords,'cooordes heree')
+        //     // lat and long of default USA San Francisco
+        //     coords.latitude = 37.773972;
+        //     coords.longitude = -122.431297;
+
+        //     this.props.change('lat', coords.latitude);
+        //     this.props.change('lng', coords.longitude);
+        //     this.props.change('date', moment.now());
+        //     console.log('coords', coords)
+        // } catch (error) {
+        //     console.error(error)
+        //     alert("cannot find your location ")
+        // }
+
+
+    }
+
     async  mediaPicker(onChange) {
         try {
             await Permissions.askAsync(Permissions.CAMERA);
-        const result = await ImagePicker.launchCameraAsync({
-          allowsEditing: true,
-          aspect: [4, 3],
-          base64: false,
-          mediaTypes:'All'
-        });
+            const result = await ImagePicker.launchCameraAsync({
+                allowsEditing: true,
+                aspect: [4, 3],
+                base64: false,
+                mediaTypes: 'All'
+            });
             // const result = await Expo.ImagePicker.launchImageLibraryAsync({ allowsEditing: true, mediaTypes: 'All', })
             const { cancelled, type, uri } = result
             onChange({ type, uri })
-            
+
 
         } catch (error) {
             console.error(error)
@@ -222,7 +260,7 @@ class CreatePostScreen extends Component {
     render() {
 
         const { handleSubmit, pristine, reset, submitting, change } = this.props;
-        
+
         if (this.props.postUploaded) {
             setTimeout(() => {
                 this.props.navigation.goBack()
@@ -237,7 +275,7 @@ class CreatePostScreen extends Component {
         }
 
         return (
-            
+
             <Container style={[{ flex: 1, backgroundColor: '#f9f9f9' }]}>
                 <Modal isVisible={this.props.progressState === 'running'}  >
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
@@ -272,8 +310,15 @@ class CreatePostScreen extends Component {
                 </Header>
 
                 <Content style={{ flex: 1, paddingHorizontal: 4, }} contentContainerStyle={{ justifyContent: 'space-evenly', alignItems: 'center', padding: 0, }}>
-                
+                    <View style={{ flex: 1 }}>
+                    </View>
+
                     <Form style={{ padding: 0, marginLeft: 0, }}>
+                        {
+                            <View style={{ marginTop: 10 ,height:250,width:500}}>
+                                <CameraExample />
+                            </View>
+                        }
                         {
                             !this.showSelectedImage(this.props.mediaPicker) && (<Field name='mediaPicker' component={MediaPicker} label='mediaPicker' onPress={this.mediaPicker} />)
                         }
@@ -286,16 +331,16 @@ class CreatePostScreen extends Component {
                             shouldPlay
                             isLooping
                         />)}
-                        
-                        
-                        <Button title="launchCameraAsync" onPress={this.useCameraHandler} />
-        <Button
-          title="launchImageLibraryAsync"
-          onPress={this.useLibraryHandler}
-        />
-        <Text style={styles.paragraph}>
-          {JSON.stringify(this.state.result)}
-        </Text>
+
+
+                        <Button title="launchCameraAsync" title={'LaunchLib'} onPress={this.useCameraHandler} />
+                        <Button
+                            title="launchImageLibraryAsync"
+                            onPress={this.useLibraryHandler}
+                        />
+                        <Text style={styles.paragraph}>
+                            {JSON.stringify(this.state.result)}
+                        </Text>
                         <Field name='title' label='Title' onChange={(e, value) => this.setState({ title: value })} component={InputText} />
                         <Field name='detailsDescription' label='Detailed Description' onChange={(e, value) => this.setState({ des: value })} component={InputTextArea} />
                         <Field name='public' label='Public' component={renderCheckbox} onChange={(event, newValue, previousValue, name) => change('private', !Boolean(newValue))} />
@@ -328,7 +373,7 @@ class CreatePostScreen extends Component {
                     onPress={() => { if (!this.showSelectedImage(this.props.mediaPicker)) { alert("Please select an image to post") } else { if (this.state.title && this.state.des) { handleSubmit() } else { alert("Please fill all required field to post") } } }}
                 ><Text style={[{ color: 'white' }]}>POST</Text></Button>
             </Container>
-            
+
         )
     }
 }
@@ -344,6 +389,14 @@ mapStateToProps = (state) => {
         progressState: state.createPost.state
     }
 }
-export default connect(mapStateToProps)(CreatePostForm)
+
+function mapDispatchToProps(dispatch) {
+    return ({
+        actions: bindActionCreators({
+            GetUserLocation
+        }, dispatch)
+    })
+}
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePostForm)
 
 
