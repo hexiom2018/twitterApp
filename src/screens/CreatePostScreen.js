@@ -10,9 +10,11 @@ import { DrawerActions } from 'react-navigation';
 import { bindActionCreators } from 'redux';
 import { GetUserLocation } from '../actions/getLocationAction'
 import { Bar } from 'react-native-progress';
+import VideoPlayer from '@expo/videoplayer';
 import { createPostAction } from '../actions/PostsActions';
 import Modal from "react-native-modal";
 import { __await } from 'tslib';
+import { Ionicons } from '@expo/vector-icons';
 const { width } = Dimensions.get("screen")
 
 const validate = (values) => {
@@ -36,6 +38,18 @@ const MediaPicker = ({ input: { onChange, value, ...inputProps }, ...restProps, 
             <TouchableOpacity style={{ height: "96%", width: "98%", margin: "1%", borderColor: 'rgb(78, 78, 79)', borderWidth: 1, borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', borderRadius: 5, }} onPress={() => { onPress(onChange) }}>
                 <Icon name='ios-camera' style={{ fontSize: 48, color: 'rgb(78, 78, 79)' }} />
                 <Text style={{ color: 'rgb(78, 78, 79)' }}>Add Photo</Text>
+            </TouchableOpacity>
+        </View>
+    </Item>
+)
+
+const VideoPicker = ({ input: { onChange, value, ...inputProps }, ...restProps, onPress }) => (
+    <Item style={[{ marginLeft: 0, marginVertical: 4, borderRadius: 5 }]} >
+
+        <View style={{ width: '100%', height: 128, backgroundColor: '#FFF', borderRadius: 3 }} >
+            <TouchableOpacity style={{ height: "96%", width: "98%", margin: "1%", borderColor: 'rgb(78, 78, 79)', borderWidth: 1, borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', borderRadius: 5, }} onPress={() => { onPress(onChange) }}>
+                <Icon name='ios-camera' style={{ fontSize: 48, color: 'rgb(78, 78, 79)' }} />
+                <Text style={{ color: 'rgb(78, 78, 79)' }}>Add Video</Text>
             </TouchableOpacity>
         </View>
     </Item>
@@ -109,6 +123,15 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#34495e',
     },
+    LaunchLib: {
+        flex: 1,
+        // backgroundColor: 'yellow',
+        justifyContent: 'space-evenly',
+        flexDirection: 'row',
+        paddingHorizontal: 15,
+        paddingVertical: 15
+
+    }
 });
 class CreatePostScreen extends Component {
     state = {
@@ -118,7 +141,10 @@ class CreatePostScreen extends Component {
         UploadingModalVisibile: false,
         title: null,
         des: null,
+        selectedImage: null,
+        selectedVideo: null,
         result: null,
+        land: false
     };
     static navigationOptions = {
         drawerLabel: 'Create Post',
@@ -137,8 +163,15 @@ class CreatePostScreen extends Component {
             allowsEditing: true,
             aspect: [4, 3],
             base64: false,
+            mediaTypes: 'All'
         });
-        this.setState({ result });
+        console.log(result, 'result here from librarry')
+        if (result.type === 'image') {
+            this.setState({ selectedImage: result });
+        } else {
+            this.setState({ selectedVideo: result });
+
+        }
     };
 
     useCameraHandler = async () => {
@@ -188,33 +221,6 @@ class CreatePostScreen extends Component {
 
         }
 
-
-
-        // if (status !== 'granted') {
-        //     const { status } = await Expo.Permissions.askAsync(Expo.Permissions.LOCATION)
-        //     if (status !== 'granted') {
-        //         alert("cannot show photos on the map");
-        //     }
-        // }
-
-        // try {
-        //     const location = Expo.Location.getCurrentPositionAsync();
-        //     const { coords } = await location
-        //     console.log(coords,'cooordes heree')
-        //     // lat and long of default USA San Francisco
-        //     coords.latitude = 37.773972;
-        //     coords.longitude = -122.431297;
-
-        //     this.props.change('lat', coords.latitude);
-        //     this.props.change('lng', coords.longitude);
-        //     this.props.change('date', moment.now());
-        //     console.log('coords', coords)
-        // } catch (error) {
-        //     console.error(error)
-        //     alert("cannot find your location ")
-        // }
-
-
     }
 
     async  mediaPicker(onChange) {
@@ -229,7 +235,7 @@ class CreatePostScreen extends Component {
             // const result = await Expo.ImagePicker.launchImageLibraryAsync({ allowsEditing: true, mediaTypes: 'All', })
             const { cancelled, type, uri } = result
             onChange({ type, uri })
-
+            console.log(result, 'result ha i=dhar')
 
         } catch (error) {
             console.error(error)
@@ -240,7 +246,7 @@ class CreatePostScreen extends Component {
     showSelectedImage = (mediaPicker) => {
         if (mediaPicker) {
             if (mediaPicker.uri) {
-                console.log(mediaPicker.uri);
+                console.log(mediaPicker.uri, 'selected image uri');
                 return true
             }
 
@@ -252,6 +258,8 @@ class CreatePostScreen extends Component {
     showSelectedVideo = (mediaPicker) => {
         if (mediaPicker) {
             if (mediaPicker.uri && mediaPicker.type && mediaPicker.type == 'video') {
+                console.log(mediaPicker.uri, 'selected image uri');
+
                 return true
             }
         }
@@ -260,7 +268,7 @@ class CreatePostScreen extends Component {
     render() {
 
         const { handleSubmit, pristine, reset, submitting, change } = this.props;
-
+        const { selectedImage, selectedVideo, land } = this.state
         if (this.props.postUploaded) {
             setTimeout(() => {
                 this.props.navigation.goBack()
@@ -311,62 +319,122 @@ class CreatePostScreen extends Component {
 
                 <Content style={{ flex: 1, paddingHorizontal: 4, }} contentContainerStyle={{ justifyContent: 'space-evenly', alignItems: 'center', padding: 0, }}>
                     <View style={{ flex: 1 }}>
-                    </View>
 
-                    <Form style={{ padding: 0, marginLeft: 0, }}>
-                        {
-                            <View style={{ marginTop: 10 ,height:250,width:500}}>
-                                <CameraExample />
+                        <Form style={{ padding: 0, marginLeft: 0, }}>
+                            {/* {
+                                <View style={{ marginTop: 10, height: 250, width: 500 }}>
+                                    <CameraExample />
+                                </View>
+                            } */}
+                            {
+                                !selectedImage ?
+                                    (<Field
+                                        name='mediaPicker'
+                                        component={MediaPicker}
+                                        label='mediaPicker'
+                                        // onPress={this.mediaPicker}
+                                        onPress={this.useCameraHandler}
+                                    />) :
+                                    <Image
+                                        source={{ uri: selectedImage.uri }}
+                                        // fadeDuration={0}
+                                        style={{ width: '100%', height: 128, marginTop: 20 }}
+                                    />
+                            }
+                            <View style={styles.LaunchLib}>
+                                <View>
+                                    <Text style={{ fontSize: 24, color: 'black' }}>OR</Text>
+                                </View>
                             </View>
-                        }
-                        {
-                            !this.showSelectedImage(this.props.mediaPicker) && (<Field name='mediaPicker' component={MediaPicker} label='mediaPicker' onPress={this.mediaPicker} />)
-                        }
-                        {/* {this.showSelectedImage(this.props.mediaPicker) && (<Image style={[{ width: '100%', height: 128, }]} source={{ uri: this.props.mediaPicker.uri }} />)} */}
-                        {this.showSelectedVideo(this.props.mediaPicker) && (<Video style={[{ width: '100%', height: 128 }]} source={{ uri: this.props.mediaPicker.uri }}
-                            rate={1.0}
-                            volume={1.0}
-                            isMuted={false}
-                            resizeMode="cover"
-                            shouldPlay
-                            isLooping
-                        />)}
+                            {
+                                !selectedVideo ?
+                                    (<Field
+                                        name='mediaPicker'
+                                        component={VideoPicker}
+                                        label='videoPicker'
+                                        onPress={this.mediaPicker}
+                                    />) :
+                                    <TouchableOpacity onPress={() => this.setState({ land: !land })}>
+                                        {/* <Video style={[{ width: '100%', height: 150 }]} source={{ uri: selectedVideo.uri }}
+                                            rate={1.0}
+                                            volume={1.0}
+                                            isMuted={false}
+                                            resizeMode="cover"
+                                            shouldPlay={land}
+                                            isLooping
+                                            onReadyForDisplay={'landscape'}
+                                        /> */}
+                                        <VideoPlayer 
+                                            videoProps={{
+                                                shouldPlay: true,
+                                                resizeMode: Video.RESIZE_MODE_CONTAIN,
+                                                source: {
+                                                    uri: selectedVideo.uri,
+                                                },
+                                            }}
+                                            isPortrait={true}
+                                            playFromPositionMillis={0}
+                                        />
+                                    </TouchableOpacity>
+                            }
+                            {/* {this.showSelectedImage(this.props.mediaPicker) && (<Image style={[{ width: '100%', height: 128, }]} source={{ uri: this.props.mediaPicker.uri }} />)} */}
+                            {/* {
+                                !this.showSelectedVideo(this.props.mediaPicker) && (
+                                    <Video style={[{ width: '100%', height: 128 }]} source={{ uri: this.props.mediaPicker.uri }}
+                                        rate={1.0}
+                                        volume={1.0}
+                                        isMuted={false}
+                                        resizeMode="cover"
+                                        shouldPlay
+                                        isLooping
+                                    />
+                                )} */}
 
+                            <View style={styles.LaunchLib}>
+                                <View>
+                                    <Button
+                                        onPress={this.useLibraryHandler}
+                                    >
+                                        <Text>
+                                            <Image
+                                                source={require('../../assets/gallery.png')}
+                                                // fadeDuration={0}
+                                                style={{ width: 60, height: 60, marginTop: 20 }}
+                                            /> Choose from Gallery
+                                            </Text>
+                                    </Button>
+                                </View>
+                            </View>
+                            {/* <Text style={styles.paragraph}>
+                                {JSON.stringify(this.state.result)}
+                            </Text> */}
+                            <Field name='title' label='Title' onChange={(e, value) => this.setState({ title: value })} component={InputText} />
+                            <Field name='detailsDescription' label='Detailed Description' onChange={(e, value) => this.setState({ des: value })} component={InputTextArea} />
+                            <Field name='public' label='Public' component={renderCheckbox} onChange={(event, newValue, previousValue, name) => change('private', !Boolean(newValue))} />
+                            <Field name='private' label='Private' component={renderCheckbox} onChange={(event, newValue, previousValue, name) => change('public', !Boolean(newValue))} />
+                            <Field
+                                name="country"
+                                component={renderPicker}
+                                iosHeader="Select country"
+                                // style={{ width: width - 20 }}
+                                mode="dropdown"
+                                iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
+                            >
+                                <Picker.Item label="USA" value="USA" />
+                            </Field>
 
-                        <Button title="launchCameraAsync" title={'LaunchLib'} onPress={this.useCameraHandler} />
-                        <Button
-                            title="launchImageLibraryAsync"
-                            onPress={this.useLibraryHandler}
-                        />
-                        <Text style={styles.paragraph}>
-                            {JSON.stringify(this.state.result)}
-                        </Text>
-                        <Field name='title' label='Title' onChange={(e, value) => this.setState({ title: value })} component={InputText} />
-                        <Field name='detailsDescription' label='Detailed Description' onChange={(e, value) => this.setState({ des: value })} component={InputTextArea} />
-                        <Field name='public' label='Public' component={renderCheckbox} onChange={(event, newValue, previousValue, name) => change('private', !Boolean(newValue))} />
-                        <Field name='private' label='Private' component={renderCheckbox} onChange={(event, newValue, previousValue, name) => change('public', !Boolean(newValue))} />
-                        <Field
-                            name="country"
-                            component={renderPicker}
-                            iosHeader="Select country"
-                            style={{ width: width - 20 }}
-                            mode="dropdown"
-                            iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
-                        >
-                            <Picker.Item label="USA" value="USA" />
-                        </Field>
-
-                        <Field
-                            name="city"
-                            component={renderPicker}
-                            iosHeader="Select city"
-                            style={{ width: width - 20 }}
-                            mode="dropdown"
-                            iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
-                        >
-                            <Picker.Item label="San Francisco, California" value="San Francisco, California" />
-                        </Field>
-                    </Form>
+                            <Field
+                                name="city"
+                                component={renderPicker}
+                                iosHeader="Select city"
+                                // style={{ width: width - 20 }}
+                                mode="dropdown"
+                                iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
+                            >
+                                <Picker.Item label="San Francisco, California" value="San Francisco, California" />
+                            </Field>
+                        </Form>
+                    </View>
                     <View style={[{ height: 60 }]} />
                 </Content>
                 <Button block style={[{ backgroundColor: '#4517FF', position: 'absolute', bottom: 4, left: 8, right: 8 }]}

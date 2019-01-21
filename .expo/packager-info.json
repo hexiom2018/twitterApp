@@ -1,9 +1,9 @@
 {
-  "expoServerNgrokUrl": "https://65-68k.talha-javed.twitterapp-git.exp.direct",
-  "packagerNgrokUrl": "https://packager.65-68k.talha-javed.twitterapp-git.exp.direct",
-  "ngrokPid": 3632,
+  "expoServerNgrokUrl": "https://cy-mzf.nabeelrrehman.updated.exp.direct",
+  "packagerNgrokUrl": "https://packager.cy-mzf.nabeelrrehman.updated.exp.direct",
+  "ngrokPid": 5096,
   "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 6640,
+  "packagerPort": null,
+  "packagerPid": null,
   "devToolsPort": 19002
 }
