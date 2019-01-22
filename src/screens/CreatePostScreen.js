@@ -26,11 +26,6 @@ const validate = (values) => {
 
 
 
-
-
-
-
-
 const MediaPicker = ({ input: { onChange, value, ...inputProps }, ...restProps, onPress }) => (
     <Item style={[{ marginLeft: 0, marginVertical: 4, borderRadius: 5 }]} >
 
@@ -435,5 +430,3 @@ function mapDispatchToProps(dispatch) {
     })
 }
 export default connect(mapStateToProps, mapDispatchToProps)(CreatePostForm)
-
-
