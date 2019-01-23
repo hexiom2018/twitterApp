@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { StyleSheet, Image, ActivityIndicator, Dimensions, Button , TextInput } from "react-native";
-import { Container, Text, View, H1, Content  } from "native-base";
+import { StyleSheet, Image, ActivityIndicator, Dimensions, Button, TextInput } from "react-native";
+import { Container, Text, View, H1, Content } from "native-base";
 import firebase from '../api/Firebase';
 import Registration from "../component/Registration";
 import GoogleSignIn from "../component/GoogleSignIn";
@@ -9,10 +9,15 @@ import LocationPermissions from "./LocationPermissions";
 import SubmitRegistration from '../component/SubmitRegistration';
 import { } from "redux";
 import { connect } from "react-redux";
+import { Linking, WebBrowser } from 'expo'
+
+const captchaUrl = `https://my-firebase-hosting/captcha-page.html?appurl=${Linking.makeUrl('')}`
+
 const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
 class RegistrationScreen extends Component {
 
-  constructor(props){
+
+  constructor(props) {
     super(props);
     this.unsubscribe = null;
     this.state = {
@@ -23,6 +28,8 @@ class RegistrationScreen extends Component {
       confirmResult: null,
     };
   }
+
+
   componentDidMount() {
     this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -41,82 +48,120 @@ class RegistrationScreen extends Component {
   }
   componentWillUnmount() {
     if (this.unsubscribe) this.unsubscribe();
- }
- signIn = () => {
-   
-   const { phoneNumber} = this.state;
-   this.setState({ message: 'Sending code ...' });
-   firebase.auth().signInWithPhoneNumber(phoneNumber)
-     .then(confirmResult => this.setState({ confirmResult, message: 'Code has been sent!' }))
-     .catch(error => this.setState({ message: `Sign In With Phone Number Error: ${error.message}` }));
- };
+  }
 
- confirmCode = () => {
-   const { codeInput, confirmResult } = this.state;
+  signIn = () => {
 
-   if (confirmResult && codeInput.length) {
-     confirmResult.confirm(codeInput)
-       .then((user) => {
-         this.setState({ message: 'Code Confirmed!' });
-       })
-       .catch(error => this.setState({ message: `Code Confirm Error: ${error.message}` }));
-   }
- };
+    const { phoneNumber } = this.state;
+    this.setState({ message: 'Sending code ...' });
+    firebase.auth().signInWithPhoneNumber(phoneNumber)
+      .then(confirmResult => this.setState({ confirmResult, message: 'Code has been sent!' }))
+      .catch(error => this.setState({ message: `Sign In With Phone Number Error: ${error.message}` }));
 
- signOut = () => {
-   firebase.auth().signOut();
- }
+      // ye kam kya tha lekin ho nh rha
+      
+    // let token = null
+    // const listener = ({ url }) => {
+    //   WebBrowser.dismissBrowser()
+    //   const tokenEncoded = Linking.parse(url).queryParams['token']
+    //   if (tokenEncoded)
+    //     token = decodeURIComponent(tokenEncoded)
+    // }
+    // Linking.addEventListener('url', listener)
+    //  WebBrowser.openBrowserAsync(captchaUrl)
+    // Linking.removeEventListener('url', listener)
+    // const { phoneNumber } = this.state;
+    // this.setState({ message: 'Sending code ...' });
+    // console.log('token==>', token);
+
+    // if (token) {
+
+    //   const captchaVerifier = {
+    //     type: 'recaptcha',
+    //     verify: () => Promise.resolve(token)
+    //   }
+
+    //   firebase.auth().signInWithPhoneNumber(phoneNumber, captchaVerifier)
+    //     .then(confirmResult =>
+    //       console.log('conform result==', confirmResult)
+    //       // this.setState({ confirmResult, message: 'Code has been sent!' })
+    //     )
+    //     .catch(error =>
+    //       console.log('error==', error)
+    //       //  this.setState({ message: `Sign In With Phone Number Error: ${error.message}` })
+    //     );
+    // }
+  };
+
+
+
+
+  confirmCode = () => {
+    const { codeInput, confirmResult } = this.state;
+
+    if (confirmResult && codeInput.length) {
+      confirmResult.confirm(codeInput)
+        .then((user) => {
+          this.setState({ message: 'Code Confirmed!' });
+        })
+        .catch(error => this.setState({ message: `Code Confirm Error: ${error.message}` }));
+    }
+  };
+
+  signOut = () => {
+    firebase.auth().signOut();
+  }
   static navigationOptions = {
     title: "registration",
     header: null
   };
   renderPhoneNumberInput() {
     const { phoneNumber } = this.state;
- 
-     return (
-       <View style={{ padding: 25 }}>
-         <Text>Enter phone number:</Text>
-         <TextInput
-           autoFocus
-           style={{ height: 40, marginTop: 15, marginBottom: 15 }}
-           onChangeText={value => this.setState({ phoneNumber: value })}
-           placeholder={'Phone number ... '}
-           value={phoneNumber}
-         />
-         <Button title="Sign In" color="green" onPress={this.signIn} />
-       </View>
-     );
-   }
- 
-   renderMessage() {
-     const { message } = this.state;
- 
-     if (!message.length) return null;
- 
-     return (
-       <Text style={{ padding: 5, backgroundColor: '#000', color: '#fff' }}>{message}</Text>
-     );
-   }
- 
-   renderVerificationCodeInput() {
-     const { codeInput } = this.state;
- 
-     return (
-       <View style={{ marginTop: 25, padding: 25 }}>
-         <Text>Enter verification code below:</Text>
-         <TextInput
-           autoFocus
-           style={{ height: 40, marginTop: 15, marginBottom: 15 }}
-           onChangeText={value => this.setState({ codeInput: value })}
-           placeholder={'Code ... '}
-           value={codeInput}
-         />
-         <Button title="Confirm Code" color="#841584" onPress={this.confirmCode} />
-       </View>
-     );
-   }
+
+    return (
+      <View style={{ padding: 25 }}>
+        <Text>Enter phone number:</Text>
+        <TextInput
+          autoFocus
+          style={{ height: 40, marginTop: 15, marginBottom: 15 }}
+          onChangeText={value => this.setState({ phoneNumber: value })}
+          placeholder={'Phone number ... '}
+          value={phoneNumber}
+        />
+        <Button title="Sign In" color="green" onPress={this.signIn} />
+      </View>
+    );
+  }
+
+  renderMessage() {
+    const { message } = this.state;
+
+    if (!message.length) return null;
+
+    return (
+      <Text style={{ padding: 5, backgroundColor: '#000', color: '#fff' }}>{message}</Text>
+    );
+  }
+
+  renderVerificationCodeInput() {
+    const { codeInput } = this.state;
+
+    return (
+      <View style={{ marginTop: 25, padding: 25 }}>
+        <Text>Enter verification code below:</Text>
+        <TextInput
+          autoFocus
+          style={{ height: 40, marginTop: 15, marginBottom: 15 }}
+          onChangeText={value => this.setState({ codeInput: value })}
+          placeholder={'Code ... '}
+          value={codeInput}
+        />
+        <Button title="Confirm Code" color="#841584" onPress={this.confirmCode} />
+      </View>
+    );
+  }
   render() {
-    const {user,confirmResult} = this.state;
+    const { user, confirmResult } = this.state;
 
 
     if (this.props.userInfo.user) {
@@ -160,7 +205,7 @@ class RegistrationScreen extends Component {
               </View>
               <View
                 style={[
-                  { flexDirection: "row", width:"80%", alignItems: "center", marginHorizontal: 10 }
+                  { flexDirection: "row", width: "80%", alignItems: "center", marginHorizontal: 10 }
                 ]}
               >
                 <View
@@ -197,32 +242,32 @@ class RegistrationScreen extends Component {
               {/* <View /> */}
             </View>
           </View>
-          
+
           <View style={{ flex: 1 }}>
 
-        {!user && !confirmResult && this.renderPhoneNumberInput()}
+            {!user && !confirmResult && this.renderPhoneNumberInput()}
 
-        {this.renderMessage()}
+            {this.renderMessage()}
 
-        {!user && confirmResult && this.renderVerificationCodeInput()}
+            {!user && confirmResult && this.renderVerificationCodeInput()}
 
-        {user && (
-          <View
-            style={{
-              padding: 15,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#77dd77',
-              flex: 1,
-            }}
-          >
-            <Image source={{ uri: successImageUri }} style={{ width: 100, height: 100, marginBottom: 25 }} />
-            <Text style={{ fontSize: 25 }}>Signed In!</Text>
-            <Text>{JSON.stringify(user)}</Text>
-            <Button title="Sign Out" color="red" onPress={this.signOut} />
+            {user && (
+              <View
+                style={{
+                  padding: 15,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#77dd77',
+                  flex: 1,
+                }}
+              >
+                <Image source={{ uri: successImageUri }} style={{ width: 100, height: 100, marginBottom: 25 }} />
+                <Text style={{ fontSize: 25 }}>Signed In!</Text>
+                <Text>{JSON.stringify(user)}</Text>
+                <Button title="Sign Out" color="red" onPress={this.signOut} />
+              </View>
+            )}
           </View>
-        )}
-      </View>
         </Content>
       </Container>
     );
