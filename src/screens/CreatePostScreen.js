@@ -144,7 +144,9 @@ class CreatePostScreen extends Component {
         selectedVideo: null,
         where: { lat: null, lng: null },
         result: null,
-        land: false
+        land: false,
+        country:'',
+        city:'',
     };
     static navigationOptions = {
         drawerLabel: 'Create Post',
@@ -215,7 +217,21 @@ class CreatePostScreen extends Component {
 
 
         let location = await Location.getCurrentPositionAsync({});
-        console.log("permission  granted ")
+        let address = Promise.resolve(Expo.Location.reverseGeocodeAsync(location.coords));
+        const that = this
+        address.then(function (value) {
+            let array = value.map(name => {
+                
+                 return(
+                    that.setState({country:name.country,
+                    city:name.city
+                    }),
+                     console.log(name.country)
+                 )
+
+                
+            })
+        });
 
         this.setState({
             location,
@@ -355,7 +371,7 @@ class CreatePostScreen extends Component {
     render() {
 
         const { handleSubmit, pristine, reset, submitting, change } = this.props;
-        const { selectedImage, selectedVideo, land, userImage, userVideo } = this.state
+        const { selectedImage, selectedVideo, land, userImage, userVideo,country,city } = this.state
         if (this.props.postUploaded) {
             setTimeout(() => {
                 this.props.navigation.goBack()
@@ -541,7 +557,7 @@ class CreatePostScreen extends Component {
                                 mode="dropdown"
                                 iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
                             >
-                                <Picker.Item label="USA" value="USA" />
+                                <Picker.Item label={country} value={country} />
                             </Field>
 
                             <Field
@@ -552,7 +568,7 @@ class CreatePostScreen extends Component {
                                 mode="dropdown"
                                 iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
                             >
-                                <Picker.Item label="San Francisco, California" value="San Francisco, California" />
+                                <Picker.Item label={city} value={city} />
                             </Field>
                         </Form>
                     </View>
