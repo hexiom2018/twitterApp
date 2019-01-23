@@ -168,10 +168,14 @@ class CreatePostScreen extends Component {
         console.log(result, 'result here from librarry')
         if (result.uri) {
             if (result.type === 'image') {
-                this.setState({ selectedImage: result, userVideo: false, userImage: true, mediaPicker: result.uri });
+                const { change } = this.props
+                change('mediaPicker', result)
+                this.setState({ selectedImage: result, userVideo: false, userImage: true, mediaPicker: result });
             } else {
                 if (result.duration <= 15000) {
-                    this.setState({ selectedVideo: result, userImage: false, userVideo: true, mediaPicker: result.uri });
+                    const { change } = this.props
+                    change('mediaPicker', result)
+                    this.setState({ selectedVideo: result, userImage: false, userVideo: true, mediaPicker: result });
                 } else {
                     Alert.alert(
                         'Alert',
@@ -194,7 +198,7 @@ class CreatePostScreen extends Component {
             base64: false,
         });
         // console.log(result,'picture ka result')
-        this.setState({ selectedImage: result, userVideo: false, mediaPicker: result.uri });
+        this.setState({ selectedImage: result, userVideo: false, mediaPicker: result });
     };
 
 

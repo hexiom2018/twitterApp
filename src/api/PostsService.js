@@ -25,9 +25,9 @@ export async function createPost(newPost, progressCallback) {
       country,
       title,
       detailsDescription,
-      lat,
-      lng,
-      date,
+      // lat,
+      // lng,
+      // date,
       mediaPicker: { uri, type }
     } = newPost;
     const privacy = newPost.public ? "public" : "private";
@@ -85,9 +85,9 @@ export async function createPost(newPost, progressCallback) {
               privacy: privacy,
               country: country,
               city: city,
-              lat: lat,
-              lng: lng,
-              date: date,
+              // lat: lat,
+              // lng: lng,
+              // date: date,
               type: type
             });
 
