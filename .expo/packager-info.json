@@ -3,7 +3,7 @@
   "packagerNgrokUrl": "https://packager.sm-a69.anonymous.twitterapp-git.exp.direct",
   "ngrokPid": 5052,
   "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 2476,
+  "packagerPort": null,
+  "packagerPid": null,
   "devToolsPort": 19002
 }
