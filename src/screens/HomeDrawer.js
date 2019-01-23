@@ -55,25 +55,25 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default connect(() => { return {} }, mapDispatchToProps)(HomeDrawer);
-
-const styles = StyleSheet.create({
+ const styles = StyleSheet.create({
     container: {
         flex: 1,
         // paddingTop: 24,
     },
     settingsContainer: {
         position: 'absolute',
-        bottom: 275,
+        bottom: 2,
         left: 0,
         right: 0,
         // top: 25,
         // paddingTop: 140,
-        paddingLeft: 18
+        paddingLeft: 18,
+        justifyContent:'center',
+        textAlign:'center'
     },
     itemText: {
         fontWeight: 'bold',
         fontSize: 14,
-        marginTop: 30
+        marginTop: 6
     },
-
-})
+ })
