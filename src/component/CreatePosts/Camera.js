@@ -145,7 +145,7 @@ export default class CameraExample extends React.Component {
                                 // style={{ width: 350, height: 350 }}
                                 />
                                 :
-                                <Camera ref={ref => this.camera = ref} style={{ flex: 1 }} ><Text>8</Text></Camera>
+                                <Camera ref={ref => this.camera = ref} style={{ flex: 1 }} ></Camera>
                         }
                     </View>
                     {

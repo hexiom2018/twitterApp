@@ -17,7 +17,9 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { DrawerActions } from 'react-navigation';
-import LocationPermissions from './LocationPermissions';
+import { Constants, Location, Permissions } from 'expo';
+
+// import LocationPermissions from './LocationPermissions';
 import {
   loadPostsAction,
   postsNewerThanIdAction,
@@ -35,11 +37,43 @@ class HomePostsScreen extends Component {
     refreshing: false,
     permissionReady: false,
   };
-
+//uzair  (nabeel ungli mat karna )
   async componentDidMount() {
     this.props.loadPostsAction();
     this.props.subscribeToPostsAction();
+    if (!Constants.isDevice) {
+      this.setState({
+        errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
+      });
+      console.log("not ios ")
+    } else {
+      this._getLocationAsync();
+    }
   }
+
+  _getLocationAsync = async () => {
+    console.log("function run ")
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      this.setState({
+        errorMessage: 'Permission to access location was denied',
+      });
+      console.log("permission not granted ")
+
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    console.log("permission  granted ")
+
+    this.setState({
+      location,
+      where: { lat: location.coords.latitude, lng: location.coords.longitude },
+      get: true
+    });
+    console.log("location===>>>>", location)
+
+  };
+  //uzair
 
   componentWillUnmount() {
     this.props.unsbuscribeFromPostsAction();
@@ -54,9 +88,9 @@ class HomePostsScreen extends Component {
 
   _keyExtractor = (item, index) => index;
 
-  permissionSuccess = () => {
-    this.setState({ permissionReady: true })
-  }
+  // permissionSuccess = () => {
+  //   this.setState({ permissionReady: true })
+  // }
   render() {
     const { refreshing } = this.state;
     let postsList = [];
@@ -65,9 +99,9 @@ class HomePostsScreen extends Component {
       postsList.push(value);
     });
 
-    if (!this.state.permissionReady) {
-      return (<LocationPermissions onSuccess={this.permissionSuccess} />)
-    }
+    // if (!this.state.permissionReady) {
+    //   return (<LocationPermissions onSuccess={this.permissionSuccess} />)
+    // }
 
     return (
 
@@ -150,9 +184,9 @@ class HomePostsScreen extends Component {
                       minHeight: 30,
                       paddingLeft: 4,
                       paddingTop: 4,
-                      flexWrap:'wrap'
+                      flexWrap: 'wrap'
                     }}>
-                      <Text style={[{ flex: 0, fontSize: 12, fontWeight:'bold', flexGrow: 1 }]}>{item.title}</Text>
+                      <Text style={[{ flex: 0, fontSize: 12, fontWeight: 'bold', flexGrow: 1 }]}>{item.title}</Text>
                     </View>
                     <View style={{ position: 'absolute', bottom: 0, right: 0, minWidth: 45, height: 18 }}>
                       <Text

@@ -1,9 +1,9 @@
 {
-  "expoServerNgrokUrl": "https://b8-9cd.anonymous.twitterapp-git.exp.direct",
-  "packagerNgrokUrl": "https://packager.b8-9cd.anonymous.twitterapp-git.exp.direct",
-  "ngrokPid": 6748,
+  "expoServerNgrokUrl": "https://sm-a69.syeduzairali.twitter.exp.direct",
+  "packagerNgrokUrl": "https://packager.sm-a69.syeduzairali.twitter.exp.direct",
+  "ngrokPid": 7116,
   "expoServerPort": 19000,
-  "packagerPort": null,
-  "packagerPid": null,
+  "packagerPort": 19001,
+  "packagerPid": 1948,
   "devToolsPort": 19002
 }
