@@ -17,7 +17,9 @@ const HomeStackNavigator = createStackNavigator({Register:{screen:RegistrationSc
                                             SearchPosts:{screen:SearchPostsScreen},
                                                ContactUs:{screen:ContactUs},
                                                 Privacy:{screen:PrivacyPolicy},
-                                                AboutUs:{screen:AboutUs}, },{
+                                                AboutUs:{screen:AboutUs}, 
+                                            },
+                                                {
                                                     navigationOptions:{
                                                         header:null,    
                                                     },
