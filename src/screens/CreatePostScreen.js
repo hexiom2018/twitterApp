@@ -4,7 +4,7 @@ import { Container, Picker, H1, Form, Item, CheckBox, Label, Input, Button, Text
 import { reduxForm, Field, formValueSelector } from 'redux-form';
 import { connect } from 'react-redux';
 import Expo, { Video, ImagePicker, Location, Permissions, Constants } from 'expo';
-// import moment from 'moment';
+import moment from 'moment';
 import CameraExample from '../component/CreatePosts/Camera'
 import { DrawerActions } from 'react-navigation';
 import { bindActionCreators } from 'redux';
@@ -53,13 +53,13 @@ const VideoPicker = ({ input: { onChange, value, ...inputProps }, ...restProps, 
 )
 
 const InputText = ({ input, label }) => (
-    <Item style={[{  padding: 5, backgroundColor: 'white', marginVertical: 4, borderRadius: 5, borderWidth: 3, borderColor: '#FFFEF6', }]} inlineLabel>
+    <Item style={[{ padding: 5, backgroundColor: 'white', marginVertical: 4, borderRadius: 5, borderWidth: 3, borderColor: '#FFFEF6', }]} inlineLabel>
         <Input placeholderTextColor='#BDBEBF' style={{ color: '#737277', }} {...input} placeholder={label} />
     </Item>
 )
 
 
-const InputTextArea = ({ input, label }) => (<Item style={[{   justifyContent: "center", backgroundColor: 'white', borderRadius: 5, borderWidth: 3, borderColor: '#FFFEF6', }]} stackedLabel>
+const InputTextArea = ({ input, label }) => (<Item style={[{ justifyContent: "center", backgroundColor: 'white', borderRadius: 5, borderWidth: 3, borderColor: '#FFFEF6', }]} stackedLabel>
 
     <Textarea {...input} rowSpan={5} style={[{ width: '100%', color: '#737277', }]} placeholder={label} placeholderTextColor='#BDBEBF' />
 </Item>)
@@ -132,17 +132,19 @@ const styles = StyleSheet.create({
 });
 class CreatePostScreen extends Component {
     state = {
-        country: 'usa',
-        city: 'usa',
         cancelled: undefined, type: undefined, uri: undefined,
         UploadingModalVisibile: false,
         title: null,
         des: null,
+        userImage: true,
+        userVideo: true,
         selectedImage: null,
         selectedVideo: null,
         where: { lat: null, lng: null },
         result: null,
-        land: false
+        land: false,
+        country: '',
+        city: '',
     };
     static navigationOptions = {
         drawerLabel: 'Create Post',
@@ -164,11 +166,27 @@ class CreatePostScreen extends Component {
             mediaTypes: 'All'
         });
         console.log(result, 'result here from librarry')
-        if (result.type === 'image') {
-            this.setState({ selectedImage: result });
-        } else {
-            this.setState({ selectedVideo: result });
-
+        if (result.uri) {
+            if (result.type === 'image') {
+                const { change } = this.props
+                change('mediaPicker', result)
+                this.setState({ selectedImage: result, userVideo: false, userImage: true, mediaPicker: result });
+            } else {
+                if (result.duration <= 15000) {
+                    const { change } = this.props
+                    change('mediaPicker', result)
+                    this.setState({ selectedVideo: result, userImage: false, userVideo: true, mediaPicker: result });
+                } else {
+                    Alert.alert(
+                        'Alert',
+                        'Video must be less than or equal to 15 sec',
+                        [
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ],
+                        { cancelable: false }
+                    )
+                }
+            }
         }
     };
 
@@ -179,7 +197,8 @@ class CreatePostScreen extends Component {
             aspect: [4, 3],
             base64: false,
         });
-        this.setState({ result });
+        // console.log(result,'picture ka result')
+        this.setState({ selectedImage: result, userVideo: false, mediaPicker: result });
     };
 
 
@@ -200,8 +219,26 @@ class CreatePostScreen extends Component {
 
 
         let location = await Location.getCurrentPositionAsync({});
-        console.log("permission  granted ")
+        let address = Promise.resolve(Expo.Location.reverseGeocodeAsync(location.coords));
+        const that = this
+        address.then(function (value) {
+            let array = value.map(name => {
 
+                return (
+                    that.setState({
+                        country: name.country,
+                        city: name.city
+                    }),
+                    console.log(name.country)
+                )
+
+
+            })
+        });
+        const { change } = this.props
+        change('lat', location.coords.latitude);
+        change('lng', location.coords.longitude);
+        change('date', moment.now());
         this.setState({
             location,
             where: { lat: location.coords.latitude, lng: location.coords.longitude },
@@ -321,10 +358,26 @@ class CreatePostScreen extends Component {
         }
         return false
     }
+
+    submitPost() {
+        const { handleSubmit } = this.props;
+        const { mediaPicker } = this.state
+
+        if (!mediaPicker.uri) {
+            alert("Please select an image to post")
+        } else {
+            if (this.state.title && this.state.des) {
+                handleSubmit()
+            } else {
+                alert("Please fill all required field to post")
+            }
+        }
+    }
+
     render() {
 
         const { handleSubmit, pristine, reset, submitting, change } = this.props;
-        const { selectedImage, selectedVideo, land } = this.state
+        const { selectedImage, selectedVideo, land, userImage, userVideo, country, city } = this.state
         if (this.props.postUploaded) {
             setTimeout(() => {
                 this.props.navigation.goBack()
@@ -375,63 +428,97 @@ class CreatePostScreen extends Component {
 
                 <Content style={{ flex: 1, paddingHorizontal: 4, }} contentContainerStyle={{ justifyContent: 'space-evenly', alignItems: 'center', padding: 0, }}>
                     <View style={{ flex: 1 }}>
-
                         <Form style={{ padding: 0, marginLeft: 0, }}>
-                            {/* {
-                                <View style={{ marginTop: 10, height: 250, width: 500 }}>
-                                    <CameraExample />
-                                </View>
-                            } */}
                             {
-                                !selectedImage ?
-                                    (<Field
-                                        name='mediaPicker'
-                                        component={MediaPicker}
-                                        label='mediaPicker'
-                                        // onPress={this.mediaPicker}
-                                        onPress={this.useCameraHandler}
-                                    />) :
-                                    <Image
-                                        source={{ uri: selectedImage.uri }}
-                                        // fadeDuration={0}
-                                        style={{ width: '100%', height: 128, marginTop: 20 }}
-                                    />
-                            }
-                            <View style={styles.LaunchLib}>
-                                <View>
-                                    <Text style={{ fontSize: 24, color: 'black' }}>OR</Text>
-                                </View>
-                            </View>
-                            {
-                                !selectedVideo ?
-                                    (<Field
-                                        name='mediaPicker'
-                                        component={VideoPicker}
-                                        label='videoPicker'
-                                        onPress={this.mediaPicker}
-                                    />) :
-                                    <TouchableOpacity onPress={() => this.setState({ land: !land })}>
-                                        {/* <Video style={[{ width: '100%', height: 150 }]} source={{ uri: selectedVideo.uri }}
-                                            rate={1.0}
-                                            volume={1.0}
-                                            isMuted={false}
-                                            resizeMode="cover"
-                                            shouldPlay={land}
-                                            isLooping
-                                            onReadyForDisplay={'landscape'}
-                                        /> */}
-                                        <VideoPlayer 
-                                            videoProps={{
-                                                shouldPlay: true,
-                                                resizeMode: Video.RESIZE_MODE_CONTAIN,
-                                                source: {
-                                                    uri: selectedVideo.uri,
-                                                },
-                                            }}
-                                            isPortrait={true}
-                                            playFromPositionMillis={0}
-                                        />
+                                !userImage &&
+                                <View
+                                    style={{ marginTop: 10, flex: 1, flexDirection: 'row', backgroundColor: 'red', justifyContent: 'center', paddingVertical: 10 }}
+                                >
+                                    <View style={{ flexGrow: 1, paddingLeft: 20 }}>
+                                        <Text>Remove</Text>
+                                    </View>
+                                    <TouchableOpacity
+                                        onPress={() => this.setState({ userImage: true, userVideo: true, selectedImage: null, selectedVideo: null })}
+                                    >
+                                        <View style={{ paddingRight: 20 }}>
+                                            <Text>X</Text>
+                                        </View>
                                     </TouchableOpacity>
+                                </View>
+                            }
+                            {
+                                !userVideo &&
+                                <View
+                                    style={{ marginTop: 10, flex: 1, flexDirection: 'row', backgroundColor: 'red', justifyContent: 'center', paddingVertical: 10 }}
+                                >
+                                    <View style={{ flexGrow: 1, paddingLeft: 20 }}>
+                                        <Text>Remove</Text>
+                                    </View>
+                                    <TouchableOpacity
+                                        onPress={() => this.setState({ userImage: true, userVideo: true, selectedImage: null, selectedVideo: null })}
+                                    >
+                                        <View style={{ paddingRight: 20 }}>
+                                            <Text>X</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                            }
+                            {
+                                userImage ?
+                                    selectedImage &&
+                                        selectedImage.uri ?
+                                        <Image
+                                            source={{ uri: selectedImage.uri }}
+                                            // fadeDuration={0}
+                                            style={{ width: '100%', height: 150, marginTop: 20 }}
+                                        />
+                                        :
+                                        (<Field
+                                            name='mediaPicker'
+                                            component={MediaPicker}
+                                            label='mediaPicker'
+                                            // onPress={this.mediaPicker}
+                                            onPress={this.useCameraHandler}
+                                        />)
+                                    :
+                                    null
+                            }
+                            {
+                                userImage && userVideo &&
+                                <View style={styles.LaunchLib}>
+                                    <View>
+                                        <Text style={{ fontSize: 24, color: 'black' }}>OR</Text>
+                                    </View>
+                                </View>
+                            }
+                            {
+                                userVideo ?
+                                    selectedVideo &&
+                                        selectedVideo.uri ?
+                                        <TouchableOpacity onPress={() => this.setState({ land: !land })}>
+                                            <VideoPlayer
+                                                videoProps={{
+                                                    resizeMode: Video.RESIZE_MODE_CONTAIN,
+                                                    source: {
+                                                        uri: selectedVideo.uri,
+                                                    },
+                                                    shouldPlay: land,
+
+                                                }}
+                                                switchToLandscape={() => this.landScape()}
+                                                isPortrait={true}
+                                                playFromPositionMillis={0}
+                                            />
+                                        </TouchableOpacity>
+                                        :
+                                        (<Field
+                                            name='mediaPicker'
+                                            component={VideoPicker}
+                                            label='videoPicker'
+                                            onPress={this.mediaPicker}
+                                        />)
+                                    :
+                                    null
                             }
                             {/* {this.showSelectedImage(this.props.mediaPicker) && (<Image style={[{ width: '100%', height: 128, }]} source={{ uri: this.props.mediaPicker.uri }} />)} */}
                             {/* {
@@ -476,7 +563,7 @@ class CreatePostScreen extends Component {
                                 mode="dropdown"
                                 iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
                             >
-                                <Picker.Item label="USA" value="USA" />
+                                <Picker.Item label={country} value={country} />
                             </Field>
 
                             <Field
@@ -487,14 +574,14 @@ class CreatePostScreen extends Component {
                                 mode="dropdown"
                                 iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
                             >
-                                <Picker.Item label="San Francisco, California" value="San Francisco, California" />
+                                <Picker.Item label={city} value={city} />
                             </Field>
                         </Form>
                     </View>
                     <View style={[{ height: 60 }]} />
                 </Content>
                 <Button block style={[{ backgroundColor: '#4517FF', position: 'absolute', bottom: 4, left: 8, right: 8 }]}
-                    onPress={() => { if (!this.showSelectedImage(this.props.mediaPicker)) { alert("Please select an image to post") } else { if (this.state.title && this.state.des) { handleSubmit() } else { alert("Please fill all required field to post") } } }}
+                    onPress={() => this.submitPost()}
                 ><Text style={[{ color: 'white' }]}>POST</Text></Button>
             </Container>
 
