@@ -4,7 +4,7 @@ import { Container, Picker, H1, Form, Item, CheckBox, Label, Input, Button, Text
 import { reduxForm, Field, formValueSelector } from 'redux-form';
 import { connect } from 'react-redux';
 import Expo, { Video, ImagePicker, Location, Permissions, Constants } from 'expo';
-// import moment from 'moment';
+import moment from 'moment';
 import CameraExample from '../component/CreatePosts/Camera'
 import { DrawerActions } from 'react-navigation';
 import { bindActionCreators } from 'redux';
@@ -132,8 +132,6 @@ const styles = StyleSheet.create({
 });
 class CreatePostScreen extends Component {
     state = {
-        country: 'usa',
-        city: 'usa',
         cancelled: undefined, type: undefined, uri: undefined,
         UploadingModalVisibile: false,
         title: null,
@@ -145,8 +143,8 @@ class CreatePostScreen extends Component {
         where: { lat: null, lng: null },
         result: null,
         land: false,
-        country:'',
-        city:'',
+        country: '',
+        city: '',
     };
     static navigationOptions = {
         drawerLabel: 'Create Post',
@@ -170,10 +168,14 @@ class CreatePostScreen extends Component {
         console.log(result, 'result here from librarry')
         if (result.uri) {
             if (result.type === 'image') {
-                this.setState({ selectedImage: result, userVideo: false, userImage: true, mediaPicker: result.uri });
+                const { change } = this.props
+                change('mediaPicker', result)
+                this.setState({ selectedImage: result, userVideo: false, userImage: true, mediaPicker: result });
             } else {
                 if (result.duration <= 15000) {
-                    this.setState({ selectedVideo: result, userImage: false, userVideo: true, mediaPicker: result.uri });
+                    const { change } = this.props
+                    change('mediaPicker', result)
+                    this.setState({ selectedVideo: result, userImage: false, userVideo: true, mediaPicker: result });
                 } else {
                     Alert.alert(
                         'Alert',
@@ -196,7 +198,7 @@ class CreatePostScreen extends Component {
             base64: false,
         });
         // console.log(result,'picture ka result')
-        this.setState({ selectedImage: result, userVideo: false, mediaPicker: result.uri });
+        this.setState({ selectedImage: result, userVideo: false, mediaPicker: result });
     };
 
 
@@ -221,18 +223,22 @@ class CreatePostScreen extends Component {
         const that = this
         address.then(function (value) {
             let array = value.map(name => {
-                
-                 return(
-                    that.setState({country:name.country,
-                    city:name.city
-                    }),
-                     console.log(name.country)
-                 )
 
-                
+                return (
+                    that.setState({
+                        country: name.country,
+                        city: name.city
+                    }),
+                    console.log(name.country)
+                )
+
+
             })
         });
-
+        const { change } = this.props
+        change('lat', location.coords.latitude);
+        change('lng', location.coords.longitude);
+        change('date', moment.now());
         this.setState({
             location,
             where: { lat: location.coords.latitude, lng: location.coords.longitude },
@@ -371,7 +377,7 @@ class CreatePostScreen extends Component {
     render() {
 
         const { handleSubmit, pristine, reset, submitting, change } = this.props;
-        const { selectedImage, selectedVideo, land, userImage, userVideo,country,city } = this.state
+        const { selectedImage, selectedVideo, land, userImage, userVideo, country, city } = this.state
         if (this.props.postUploaded) {
             setTimeout(() => {
                 this.props.navigation.goBack()

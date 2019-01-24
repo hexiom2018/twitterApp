@@ -27,7 +27,7 @@ class HomeDrawer extends Component {
             <View style={styles.container}>
                 <DrawerItems {...this.props} />
                 <View style={styles.settingsContainer}>
-                    <TouchableOpacity onPress={() => { this.props.navigation.navigate('ContactUs') }}>
+                    {/* <TouchableOpacity onPress={() => { this.props.navigation.navigate('ContactUs') }}>
                         <Text style={styles.itemText}>Contact us</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { this.props.navigation.navigate('AboutUs') }}>
@@ -41,7 +41,7 @@ class HomeDrawer extends Component {
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => this.logout()}>
                         <Text style={[styles.itemText, { color: 'red' }]}>Log Out</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
             </View>
 
