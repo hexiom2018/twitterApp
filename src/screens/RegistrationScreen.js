@@ -11,7 +11,8 @@ import { } from "redux";
 import { connect } from "react-redux";
 import { Linking, WebBrowser } from 'expo'
 
-const captchaUrl = `https://my-firebase-hosting/captcha-page.html?appurl=${Linking.makeUrl('')}`
+const captchaUrl = `https://my-firebase-hosting/captcha-page.html?appurl=${Linking.makeUrl('6LfJaYwUAAAAABTG-6HNeoWwIcvwn1yspWSS68Ms')}`
+
 
 const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
 class RegistrationScreen extends Component {
@@ -45,6 +46,13 @@ class RegistrationScreen extends Component {
         });
       }
     });
+    // grecaptcha.ready(function() {
+    //   grecaptcha.execute('6LfJaYwUAAAAABTG-6HNeoWwIcvwn1yspWSS68Ms', {action: 'action_name'})
+    //   .then(function(token) {
+    //   // Verify the token on the server.
+    //   console.log("toekn=>>>",token)
+    //   });
+    //   })
   }
   componentWillUnmount() {
     if (this.unsubscribe) this.unsubscribe();
@@ -52,45 +60,53 @@ class RegistrationScreen extends Component {
 
   signIn = () => {
 
-    const { phoneNumber } = this.state;
-    this.setState({ message: 'Sending code ...' });
-    firebase.auth().signInWithPhoneNumber(phoneNumber)
-      .then(confirmResult => this.setState({ confirmResult, message: 'Code has been sent!' }))
-      .catch(error => this.setState({ message: `Sign In With Phone Number Error: ${error.message}` }));
+    // const { phoneNumber } = this.state;
+    // var appVerifier = window.recaptchaVerifier;
+    // this.setState({ message: 'Sending code ...' });
+    // firebase.auth().signInWithPhoneNumber(phoneNumber , appVerifier)
+    //   .then(confirmResult =>
+    //     console.log(confirmResult , 'jsdhjsdhjhds')
+        
+    //     //  this.setState({ confirmResult, message: 'Code has been sent!' })
+    //      )
+    //   .catch(error =>
+    //     console.log('===>>>' , error)
+    //     //  this.setState({ message: `Sign In With Phone Number Error: ${error.message}` })
+    //      );
 
       // ye kam kya tha lekin ho nh rha
       
-    // let token = null
-    // const listener = ({ url }) => {
-    //   WebBrowser.dismissBrowser()
-    //   const tokenEncoded = Linking.parse(url).queryParams['token']
-    //   if (tokenEncoded)
-    //     token = decodeURIComponent(tokenEncoded)
-    // }
-    // Linking.addEventListener('url', listener)
-    //  WebBrowser.openBrowserAsync(captchaUrl)
-    // Linking.removeEventListener('url', listener)
-    // const { phoneNumber } = this.state;
-    // this.setState({ message: 'Sending code ...' });
-    // console.log('token==>', token);
+    var token = null
+    const listener = ({ url }) => {
+      WebBrowser.dismissBrowser()
+      const tokenEncoded = Linking.parse(url).queryParams['token']
+      if (tokenEncoded)
+        token = decodeURIComponent(tokenEncoded)
+    }
+    Linking.addEventListener('url', listener)
+     WebBrowser.openBrowserAsync(captchaUrl)
+    Linking.removeEventListener('url', listener)
+    const { phoneNumber } = this.state;
+    this.setState({ message: 'Sending code ...' });
+    console.log('token==>', token);
 
-    // if (token) {
+    if (token) {
 
-    //   const captchaVerifier = {
-    //     type: 'recaptcha',
-    //     verify: () => Promise.resolve(token)
-    //   }
+      const captchaVerifier = {
+        type: 'recaptcha',
+        verify: () => Promise.resolve(token)
+      }
 
-    //   firebase.auth().signInWithPhoneNumber(phoneNumber, captchaVerifier)
-    //     .then(confirmResult =>
-    //       console.log('conform result==', confirmResult)
-    //       // this.setState({ confirmResult, message: 'Code has been sent!' })
-    //     )
-    //     .catch(error =>
-    //       console.log('error==', error)
-    //       //  this.setState({ message: `Sign In With Phone Number Error: ${error.message}` })
-    //     );
-    // }
+      firebase.auth().signInWithPhoneNumber(phoneNumber, captchaVerifier)
+        .then(confirmResult =>
+          console.log('conform result==', confirmResult)
+          // this.setState({ confirmResult, message: 'Code has been sent!' })
+        )
+        .catch(error =>
+          console.log('error==', error)
+          //  this.setState({ message: `Sign In With Phone Number Error: ${error.message}` })
+        );
+    }
   };
 
 
