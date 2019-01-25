@@ -88,6 +88,7 @@ export default class CameraExample extends React.Component {
             uri: null,
             permissionsGranted: false,
             bcolor: 'red',
+            type: Camera.Constants.Type.back,
             cameraIsRecording: false
         }
         this.camera = undefined
@@ -118,9 +119,26 @@ export default class CameraExample extends React.Component {
                 )
         }
         setTimeout(() => {
-            this.setState({ cameraIsRecording: false })
-            this.camera.stopRecording();
+            if (this.camera) {
+                this.camera.stopRecording();
+                this.setState({ cameraIsRecording: false })
+            }
         }, 15000)
+
+
+    }
+
+    goBack() {
+        const { back } = this.props
+
+        back()
+    }
+
+    done() {
+        const { uri } = this.state
+        const { VideoUri } = this.props
+        VideoUri(uri)
+        // console.log(uri, 'uri herere')
     }
 
     render() {
@@ -152,7 +170,7 @@ export default class CameraExample extends React.Component {
                     {
                         uri ?
                             <View style={styles.btn}>
-                                <TouchableOpacity style={styles.opacity3}>
+                                <TouchableOpacity onPress={() => this.goBack()} style={styles.opacity3}>
                                     {/* <Text>Back</Text> */}
                                     <Icon name='arrow-back' />
                                 </TouchableOpacity>
@@ -160,20 +178,22 @@ export default class CameraExample extends React.Component {
                                     {/* <Text>Retake</Text> */}
                                     <Icon name='loop' />
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.opacity3} >
+                                <TouchableOpacity onPress={() => this.done()} style={styles.opacity3} >
                                     {/* <Text>Done</Text> */}
                                     <Icon name='done' />
                                 </TouchableOpacity>
                             </View>
                             :
                             <View style={styles.btn}>
-                                <TouchableOpacity style={styles.opacity2}>
+                                <TouchableOpacity onPress={() => this.goBack()} style={styles.opacity2}>
                                     <Icon name='arrow-back' />
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.opacity2} onPress={() => {
                                     if (cameraIsRecording) {
-                                        this.setState({ cameraIsRecording: false })
-                                        this.camera.stopRecording();
+                                        if (this.camera) {
+                                            this.camera.stopRecording();
+                                            this.setState({ cameraIsRecording: false })
+                                        }
                                     }
                                     else {
                                         this.setState({ cameraIsRecording: true })
@@ -190,7 +210,11 @@ export default class CameraExample extends React.Component {
                                         // <Image source={{uri:video}}/>
                                     }
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.opacity2}>
+                                <TouchableOpacity onPress={() => this.setState({
+                                    type: this.state.type === Camera.Constants.Type.back
+                                        ? Camera.Constants.Type.front
+                                        : Camera.Constants.Type.back,
+                                })} style={styles.opacity2}>
                                     <Icon name='flip-to-front' />
                                 </TouchableOpacity>
                             </View>
