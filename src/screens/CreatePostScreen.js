@@ -374,10 +374,24 @@ class CreatePostScreen extends Component {
         }
     }
 
+    back() {
+        this.setState({ startVideo: false })
+    }
+
+    getUri(uri) {
+        console.log(uri, 'uri from create post')
+        const obj = {
+            uri: uri,
+            type: 'video'
+        }
+        this.setState({ startVideo: false, selectedVideo: obj, userImage: false, userVideo: true})
+
+    }
+
     render() {
 
         const { handleSubmit, pristine, reset, submitting, change } = this.props;
-        const { selectedImage, selectedVideo, land, userImage, userVideo, country, city } = this.state
+        const { selectedImage, selectedVideo, land, userImage, userVideo, country, city, startVideo } = this.state
         if (this.props.postUploaded) {
             setTimeout(() => {
                 this.props.navigation.goBack()
@@ -392,136 +406,138 @@ class CreatePostScreen extends Component {
         }
 
         return (
-
-            <Container style={[{ flex: 1, backgroundColor: '#f9f9f9' }]}>
-                <Modal isVisible={this.props.progressState === 'running'}  >
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
-                        <H1>Uploading Post</H1>
-                        <Bar width={300} progress={this.props.progress * 0.01} unfilledColor='white' borderWidth={3} borderColor='#F5F0DD' color='#E2D7B7' indeterminate={false} />
-                    </View>
-                </Modal>
-                <Header style={{ width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TouchableOpacity style={{ height: '100%', width: 40, alignItems: 'center', justifyContent: 'center' }}
-                        onPress={() => {
-                            this.props.navigation.dispatch(DrawerActions.toggleDrawer());
-                        }}
-                    >
-                        <Icon style={[{ color: 'white', }]} name='menu' onPress={() => { this.props.navigation.dispatch(DrawerActions.toggleDrawer()); }} />
-                    </TouchableOpacity>
-                    <View style={{ height: "100%", justifyContent: 'center', alignItems: 'center', minWidth: 40 }}>
-                        <Title style={[{ color: 'white', textAlign: 'center', fontSize: 23 }]}>Create Post</Title>
-                    </View>
-                    <TouchableOpacity style={{ height: '100%', width: 40, alignItems: 'center', justifyContent: 'center' }}
-                        onPress={() => {
-                            this.props.navigation.navigate('SearchPosts');
-                        }}
-                    >
-                        <Icon
-                            style={[{ color: 'white' }]}
-                            name="search"
+            startVideo ?
+                <CameraExample back={() => this.back()} VideoUri={(uri) => this.getUri(uri)} />
+                :
+                <Container style={[{ flex: 1, backgroundColor: '#f9f9f9' }]}>
+                    <Modal isVisible={this.props.progressState === 'running'}  >
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
+                            <H1>Uploading Post</H1>
+                            <Bar width={300} progress={this.props.progress * 0.01} unfilledColor='white' borderWidth={3} borderColor='#F5F0DD' color='#E2D7B7' indeterminate={false} />
+                        </View>
+                    </Modal>
+                    <Header style={{ width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <TouchableOpacity style={{ height: '100%', width: 40, alignItems: 'center', justifyContent: 'center' }}
+                            onPress={() => {
+                                this.props.navigation.dispatch(DrawerActions.toggleDrawer());
+                            }}
+                        >
+                            <Icon style={[{ color: 'white', }]} name='menu' onPress={() => { this.props.navigation.dispatch(DrawerActions.toggleDrawer()); }} />
+                        </TouchableOpacity>
+                        <View style={{ height: "100%", justifyContent: 'center', alignItems: 'center', minWidth: 40 }}>
+                            <Title style={[{ color: 'white', textAlign: 'center', fontSize: 23 }]}>Create Post</Title>
+                        </View>
+                        <TouchableOpacity style={{ height: '100%', width: 40, alignItems: 'center', justifyContent: 'center' }}
                             onPress={() => {
                                 this.props.navigation.navigate('SearchPosts');
                             }}
-                        />
-                    </TouchableOpacity>
-                </Header>
+                        >
+                            <Icon
+                                style={[{ color: 'white' }]}
+                                name="search"
+                                onPress={() => {
+                                    this.props.navigation.navigate('SearchPosts');
+                                }}
+                            />
+                        </TouchableOpacity>
+                    </Header>
 
-                <Content style={{ flex: 1, paddingHorizontal: 4, }} contentContainerStyle={{ justifyContent: 'space-evenly', alignItems: 'center', padding: 0, }}>
-                    <View style={{ flex: 1 }}>
-                        <Form style={{ padding: 0, marginLeft: 0, }}>
-                            {
-                                !userImage &&
-                                <View
-                                    style={{ marginTop: 10, flex: 1, flexDirection: 'row', backgroundColor: 'red', justifyContent: 'center', paddingVertical: 10 }}
-                                >
-                                    <View style={{ flexGrow: 1, paddingLeft: 20 }}>
-                                        <Text>Remove</Text>
-                                    </View>
-                                    <TouchableOpacity
-                                        onPress={() => this.setState({ userImage: true, userVideo: true, selectedImage: null, selectedVideo: null })}
+                    <Content style={{ flex: 1, paddingHorizontal: 4, }} contentContainerStyle={{ justifyContent: 'space-evenly', alignItems: 'center', padding: 0, }}>
+                        <View style={{ flex: 1 }}>
+                            <Form style={{ padding: 0, marginLeft: 0, }}>
+                                {
+                                    !userImage &&
+                                    <View
+                                        style={{ marginTop: 10, flex: 1, flexDirection: 'row', backgroundColor: 'red', justifyContent: 'center', paddingVertical: 10 }}
                                     >
-                                        <View style={{ paddingRight: 20 }}>
-                                            <Text>X</Text>
+                                        <View style={{ flexGrow: 1, paddingLeft: 20 }}>
+                                            <Text>Remove</Text>
                                         </View>
-                                    </TouchableOpacity>
-                                </View>
-                            }
-                            {
-                                !userVideo &&
-                                <View
-                                    style={{ marginTop: 10, flex: 1, flexDirection: 'row', backgroundColor: 'red', justifyContent: 'center', paddingVertical: 10 }}
-                                >
-                                    <View style={{ flexGrow: 1, paddingLeft: 20 }}>
-                                        <Text>Remove</Text>
-                                    </View>
-                                    <TouchableOpacity
-                                        onPress={() => this.setState({ userImage: true, userVideo: true, selectedImage: null, selectedVideo: null })}
-                                    >
-                                        <View style={{ paddingRight: 20 }}>
-                                            <Text>X</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
-                            }
-                            {
-                                userImage ?
-                                    selectedImage &&
-                                        selectedImage.uri ?
-                                        <Image
-                                            source={{ uri: selectedImage.uri }}
-                                            // fadeDuration={0}
-                                            style={{ width: '100%', height: 150, marginTop: 20 }}
-                                        />
-                                        :
-                                        (<Field
-                                            name='mediaPicker'
-                                            component={MediaPicker}
-                                            label='mediaPicker'
-                                            // onPress={this.mediaPicker}
-                                            onPress={this.useCameraHandler}
-                                        />)
-                                    :
-                                    null
-                            }
-                            {
-                                userImage && userVideo &&
-                                <View style={styles.LaunchLib}>
-                                    <View>
-                                        <Text style={{ fontSize: 24, color: 'black' }}>OR</Text>
-                                    </View>
-                                </View>
-                            }
-                            {
-                                userVideo ?
-                                    selectedVideo &&
-                                        selectedVideo.uri ?
-                                        <TouchableOpacity onPress={() => this.setState({ land: !land })}>
-                                            <VideoPlayer
-                                                videoProps={{
-                                                    resizeMode: Video.RESIZE_MODE_CONTAIN,
-                                                    source: {
-                                                        uri: selectedVideo.uri,
-                                                    },
-                                                    shouldPlay: land,
-
-                                                }}
-                                                switchToLandscape={() => this.landScape()}
-                                                isPortrait={true}
-                                                playFromPositionMillis={0}
-                                            />
+                                        <TouchableOpacity
+                                            onPress={() => this.setState({ userImage: true, userVideo: true, selectedImage: null, selectedVideo: null })}
+                                        >
+                                            <View style={{ paddingRight: 20 }}>
+                                                <Text>X</Text>
+                                            </View>
                                         </TouchableOpacity>
+                                    </View>
+                                }
+                                {
+                                    !userVideo &&
+                                    <View
+                                        style={{ marginTop: 10, flex: 1, flexDirection: 'row', backgroundColor: 'red', justifyContent: 'center', paddingVertical: 10 }}
+                                    >
+                                        <View style={{ flexGrow: 1, paddingLeft: 20 }}>
+                                            <Text>Remove</Text>
+                                        </View>
+                                        <TouchableOpacity
+                                            onPress={() => this.setState({ userImage: true, userVideo: true, selectedImage: null, selectedVideo: null })}
+                                        >
+                                            <View style={{ paddingRight: 20 }}>
+                                                <Text>X</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    </View>
+                                }
+                                {
+                                    userImage ?
+                                        selectedImage &&
+                                            selectedImage.uri ?
+                                            <Image
+                                                source={{ uri: selectedImage.uri }}
+                                                // fadeDuration={0}
+                                                style={{ width: '100%', height: 150, marginTop: 20 }}
+                                            />
+                                            :
+                                            (<Field
+                                                name='mediaPicker'
+                                                component={MediaPicker}
+                                                label='mediaPicker'
+                                                // onPress={this.mediaPicker}
+                                                onPress={this.useCameraHandler}
+                                            />)
                                         :
-                                        (<Field
-                                            name='mediaPicker'
-                                            component={VideoPicker}
-                                            label='videoPicker'
-                                            onPress={this.mediaPicker}
-                                        />)
-                                    :
-                                    null
-                            }
-                            {/* {this.showSelectedImage(this.props.mediaPicker) && (<Image style={[{ width: '100%', height: 128, }]} source={{ uri: this.props.mediaPicker.uri }} />)} */}
-                            {/* {
+                                        null
+                                }
+                                {
+                                    userImage && userVideo &&
+                                    <View style={styles.LaunchLib}>
+                                        <View>
+                                            <Text style={{ fontSize: 24, color: 'black' }}>OR</Text>
+                                        </View>
+                                    </View>
+                                }
+                                {
+                                    userVideo ?
+                                        selectedVideo &&
+                                            selectedVideo.uri ?
+                                            <TouchableOpacity onPress={() => this.setState({ land: !land })}>
+                                                <VideoPlayer
+                                                    videoProps={{
+                                                        resizeMode: Video.RESIZE_MODE_CONTAIN,
+                                                        source: {
+                                                            uri: selectedVideo.uri,
+                                                        },
+                                                        shouldPlay: land,
+
+                                                    }}
+                                                    switchToLandscape={() => this.landScape()}
+                                                    isPortrait={true}
+                                                    playFromPositionMillis={0}
+                                                />
+                                            </TouchableOpacity>
+                                            :
+                                            (<Field
+                                                name='mediaPicker'
+                                                component={VideoPicker}
+                                                label='videoPicker'
+                                                onPress={() => this.setState({ startVideo: true })}
+                                            />)
+                                        :
+                                        null
+                                }
+                                {/* {this.showSelectedImage(this.props.mediaPicker) && (<Image style={[{ width: '100%', height: 128, }]} source={{ uri: this.props.mediaPicker.uri }} />)} */}
+                                {/* {
                                 !this.showSelectedVideo(this.props.mediaPicker) && (
                                     <Video style={[{ width: '100%', height: 128 }]} source={{ uri: this.props.mediaPicker.uri }}
                                         rate={1.0}
@@ -533,57 +549,57 @@ class CreatePostScreen extends Component {
                                     />
                                 )} */}
 
-                            <View style={styles.LaunchLib}>
-                                <View>
-                                    <Button
-                                        onPress={this.useLibraryHandler}
-                                    >
-                                        <Text>
-                                            <Image
-                                                source={require('../../assets/gallery.png')}
-                                                // fadeDuration={0}
-                                                style={{ width: 60, height: 60, marginTop: 20 }}
-                                            /> Choose from Gallery
+                                <View style={styles.LaunchLib}>
+                                    <View>
+                                        <Button
+                                            onPress={this.useLibraryHandler}
+                                        >
+                                            <Text>
+                                                <Image
+                                                    source={require('../../assets/gallery.png')}
+                                                    // fadeDuration={0}
+                                                    style={{ width: 60, height: 60, marginTop: 20 }}
+                                                /> Choose from Gallery
                                             </Text>
-                                    </Button>
+                                        </Button>
+                                    </View>
                                 </View>
-                            </View>
-                            {/* <Text style={styles.paragraph}>
+                                {/* <Text style={styles.paragraph}>
                                 {JSON.stringify(this.state.result)}
                             </Text> */}
-                            <Field name='title' label='Title' onChange={(e, value) => this.setState({ title: value })} component={InputText} />
-                            <Field name='detailsDescription' label='Detailed Description' onChange={(e, value) => this.setState({ des: value })} component={InputTextArea} />
-                            <Field name='public' label='Public' component={renderCheckbox} onChange={(event, newValue, previousValue, name) => change('private', !Boolean(newValue))} />
-                            <Field name='private' label='Private' component={renderCheckbox} onChange={(event, newValue, previousValue, name) => change('public', !Boolean(newValue))} />
-                            <Field
-                                name="country"
-                                component={renderPicker}
-                                iosHeader="Select country"
-                                // style={{ width: width - 20 }}
-                                mode="dropdown"
-                                iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
-                            >
-                                <Picker.Item label={country} value={country} />
-                            </Field>
+                                <Field name='title' label='Title' onChange={(e, value) => this.setState({ title: value })} component={InputText} />
+                                <Field name='detailsDescription' label='Detailed Description' onChange={(e, value) => this.setState({ des: value })} component={InputTextArea} />
+                                <Field name='public' label='Public' component={renderCheckbox} onChange={(event, newValue, previousValue, name) => change('private', !Boolean(newValue))} />
+                                <Field name='private' label='Private' component={renderCheckbox} onChange={(event, newValue, previousValue, name) => change('public', !Boolean(newValue))} />
+                                <Field
+                                    name="country"
+                                    component={renderPicker}
+                                    iosHeader="Select country"
+                                    // style={{ width: width - 20 }}
+                                    mode="dropdown"
+                                    iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
+                                >
+                                    <Picker.Item label={country} value={country} />
+                                </Field>
 
-                            <Field
-                                name="city"
-                                component={renderPicker}
-                                iosHeader="Select city"
-                                // style={{ width: width - 20 }}
-                                mode="dropdown"
-                                iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
-                            >
-                                <Picker.Item label={city} value={city} />
-                            </Field>
-                        </Form>
-                    </View>
-                    <View style={[{ height: 60 }]} />
-                </Content>
-                <Button block style={[{ backgroundColor: '#4517FF', position: 'absolute', bottom: 4, left: 8, right: 8 }]}
-                    onPress={() => this.submitPost()}
-                ><Text style={[{ color: 'white' }]}>POST</Text></Button>
-            </Container>
+                                <Field
+                                    name="city"
+                                    component={renderPicker}
+                                    iosHeader="Select city"
+                                    // style={{ width: width - 20 }}
+                                    mode="dropdown"
+                                    iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#4517FF", fontSize: 25 }} />}
+                                >
+                                    <Picker.Item label={city} value={city} />
+                                </Field>
+                            </Form>
+                        </View>
+                        <View style={[{ height: 60 }]} />
+                    </Content>
+                    <Button block style={[{ backgroundColor: '#4517FF', position: 'absolute', bottom: 4, left: 8, right: 8 }]}
+                        onPress={() => this.submitPost()}
+                    ><Text style={[{ color: 'white' }]}>POST</Text></Button>
+                </Container>
 
         )
     }
