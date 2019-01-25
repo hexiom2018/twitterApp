@@ -380,11 +380,14 @@ class CreatePostScreen extends Component {
 
     getUri(uri) {
         console.log(uri, 'uri from create post')
+        const { change } = this.props
         const obj = {
             uri: uri,
             type: 'video'
         }
-        this.setState({ startVideo: false, selectedVideo: obj, userImage: false, userVideo: true})
+        change('mediaPicker', obj)
+
+        this.setState({ startVideo: false, selectedVideo: obj, userImage: false, userVideo: true, mediaPicker: obj })
 
     }
 
