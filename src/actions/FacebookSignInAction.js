@@ -2,7 +2,7 @@ import Expo from 'expo';
 import firebase from '../api/Firebase';
 
 export const SIGN_IN_FACEBOOK = 'SIGN_IN_FACEBOOK';
-const appID = '2196250970662645';
+const appID = '511751522681915';
 export function loginWithFacebook() {
   return async dispatch => {
     const TIMEOUTID = setTimeout(async () => {
@@ -30,7 +30,7 @@ export function loginWithFacebook() {
           dispatch({ type: SIGN_IN_FACEBOOK, error: 'cancelled' });
         }
       } catch (error) {
-        console.error(error);
+        // console.error(error);
         dispatch({ type: SIGN_IN_FACEBOOK, error: error.message });
       }
     }, 0);

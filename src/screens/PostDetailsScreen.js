@@ -264,11 +264,13 @@ class PostDetailsScreen extends Component {
   _keyExtractor = (item, index) => index.toString();
 
   safelyHumanizeDate(date) {
+   
     if (!date) {
       return "";
     }
 
-    return moment.duration(moment(new Date(date))).humanize();
+    // return moment.duration(moment(new Date(date))).humanize();
+    return moment(new Date(date)).fromNow();    
   }
   render() {
     const { post } = this.props.navigation.state.params;
@@ -407,7 +409,7 @@ class PostDetailsScreen extends Component {
               ]}
             >
               <Animated.View style={{ height: this.state.animation }}>
-                <Text style={[{ color: "rgb(115, 114, 119)", fontWeight: "bold", marginLeft: 5 }]}>Decription</Text>
+                <Text style={[{ color: "rgb(115, 114, 119)", fontWeight: "bold", marginLeft: 5 }]}>Description</Text>
                 <Text style={[{ color: "rgb(115, 114, 119)" }]}>{post.description}</Text>
               </Animated.View>
             </View>
@@ -472,11 +474,11 @@ class PostDetailsScreen extends Component {
                             : require("../../assets/avatar2.png")
                         }
                       />
-                      <View style={[{ marginLeft: 6, height: "90%", justifyContent: "space-around" }]}>
+                      <View style={[{ marginLeft: 6, height: "90%", justifyContent: "space-around", marginRight:6 }]}>
                         <Text style={[{ color: "#3d538d", fontWeight: "bold" }]}>
                           {item.name || ""}
                         </Text>
-                        <Text style={[{ color: "rgb(115, 114, 119)" }]}>
+                        <Text style={[{ color: "rgb(115, 114, 119)" , width: 180}]}>
                           {item.comment}
                         </Text>
                       </View>
@@ -547,7 +549,7 @@ class PostDetailsScreen extends Component {
                           Reply
                         </Text>
                       </TouchableOpacity>
-                      <Text style={[{ color: "#BDBEBF", fontSize: 10 }]}>
+                      <Text style={[{ color: "#BDBEBF", fontSize: 10}]}>
                         {this.safelyHumanizeDate(item.date)}
                       </Text>
                     </View>
