@@ -76,11 +76,8 @@
 // }
 
 import React from 'react';
-import {Container, Picker, H1, Form, Item, CheckBox, Label, Input, Button, Text, Content, Icon, Textarea, Left, Body, Header, Right, Title ,  View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Camera, Permissions, Video } from 'expo';
-import Modal from "react-native-modal";
-import { Bar } from 'react-native-progress';
-
 
 
 export default class CameraExample extends React.Component {
@@ -133,42 +130,7 @@ export default class CameraExample extends React.Component {
             return <View><Text>Camera permissions not granted</Text></View>
         } else {
             return (
-              
                 <View style={{ flex: 1 }}>
-                <Container style={[{ flex: 1, backgroundColor: '#f9f9f9' }]}>
-                <Modal isVisible={this.props.progressState === 'running'}  >
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
-                        <H1>Uploading Post</H1>
-                        <Bar width={300} progress={this.props.progress * 0.01} unfilledColor='white' borderWidth={3} borderColor='#F5F0DD' color='#E2D7B7' indeterminate={false} />
-                    </View>
-                </Modal>
-                <Header style={{ width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TouchableOpacity style={{ height: '100%', width: 40, alignItems: 'center', justifyContent: 'center' }}
-                        onPress={() => {
-                            this.props.navigation.dispatch(DrawerActions.toggleDrawer());
-                        }}
-                    >
-                        <Icon style={[{ color: 'white', }]} name='menu' onPress={() => { this.props.navigation.dispatch(DrawerActions.toggleDrawer()); }} />
-                    </TouchableOpacity>
-                    <View style={{ height: "100%", justifyContent: 'center', alignItems: 'center', minWidth: 40 }}>
-                        <Title style={[{ color: 'white', textAlign: 'center', fontSize: 23 }]}>Create Post</Title>
-                    </View>
-                    <TouchableOpacity style={{ height: '100%', width: 40, alignItems: 'center', justifyContent: 'center' }}
-                        onPress={() => {
-                            this.props.navigation.navigate('SearchPosts');
-                        }}
-                    >
-                        <Icon
-                            style={[{ color: 'white' }]}
-                            name="search"
-                            onPress={() => {
-                                this.props.navigation.navigate('SearchPosts');
-                            }}
-                        />
-                    </TouchableOpacity>
-                </Header>
-                </Container >
-
                     <View style={{ flex: 1 }}>
                         {
                             uri ?
@@ -329,21 +291,3 @@ const styles = StyleSheet.create({
 
     }
 })
-mapStateToProps = (state) => {
-    return {
-        mediaPicker: selector(state, 'mediaPicker'),
-        postUploaded: state.createPost.postUploaded,
-        createPostError: state.createPost.error,
-        progress: state.createPost.progress,
-        progressState: state.createPost.state
-    }
-}
-
-function mapDispatchToProps(dispatch) {
-    return ({
-        actions: bindActionCreators({
-            GetUserLocation
-        }, dispatch)
-    })
-}
-export default connect(mapStateToProps, mapDispatchToProps)(camera)

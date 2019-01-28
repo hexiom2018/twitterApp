@@ -5,7 +5,7 @@ import HomePostsScreen from '../screens/HomePostsScreen';
 import GoogleMapcreen from '../screens/GoogleMapScreen';
 import CreatePostScreen from '../screens/CreatePostScreen';
 import HomeDrawer from '../screens/HomeDrawer';
-
+import camera from '../component/CreatePosts/Camera'
 export const HomeDrawerNavigator = createDrawerNavigator(
   {
     Home: {
@@ -16,6 +16,7 @@ export const HomeDrawerNavigator = createDrawerNavigator(
     },
     GoogleMap: { screen: GoogleMapcreen },
     CreatePost: { screen: CreatePostScreen },
+    camera:{screen:camera},
   },
   {
     drawerWidth: 300,

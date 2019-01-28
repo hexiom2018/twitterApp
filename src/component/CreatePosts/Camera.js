@@ -76,9 +76,10 @@
 // }
 
 import React from 'react';
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Camera, Permissions, Video } from 'expo';
-
+import { Icon } from 'react-native-elements'
+import video from '../../../assets/video.png'
 
 export default class CameraExample extends React.Component {
     constructor(props) {
@@ -87,6 +88,7 @@ export default class CameraExample extends React.Component {
             uri: null,
             permissionsGranted: false,
             bcolor: 'red',
+            type: Camera.Constants.Type.back,
             cameraIsRecording: false
         }
         this.camera = undefined
@@ -117,9 +119,26 @@ export default class CameraExample extends React.Component {
                 )
         }
         setTimeout(() => {
-                this.setState({ cameraIsRecording: false })
+            if (this.camera) {
                 this.camera.stopRecording();
+                this.setState({ cameraIsRecording: false })
+            }
         }, 15000)
+
+
+    }
+
+    goBack() {
+        const { back } = this.props
+
+        back()
+    }
+
+    done() {
+        const { uri } = this.state
+        const { VideoUri } = this.props
+        VideoUri(uri)
+        // console.log(uri, 'uri herere')
     }
 
     render() {
@@ -140,7 +159,7 @@ export default class CameraExample extends React.Component {
                                     resizeMode="cover"
                                     shouldPlay
                                     isLooping
-                                    
+
                                     style={{ flex: 1 }}
                                 // style={{ width: 350, height: 350 }}
                                 />
@@ -150,17 +169,31 @@ export default class CameraExample extends React.Component {
                     </View>
                     {
                         uri ?
-                            <View style={styles.view}>
-                                <TouchableOpacity style={styles.opacity2} onPress={() => { this.setState({ uri: null }) }}>
-                                    <Text>Retake</Text>
+                            <View style={styles.btn}>
+                                <TouchableOpacity onPress={() => this.goBack()} style={styles.opacity3}>
+                                    {/* <Text>Back</Text> */}
+                                    <Icon name='arrow-back' />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.opacity3} onPress={() => { this.setState({ uri: '' }) }}>
+                                    {/* <Text>Retake</Text> */}
+                                    <Icon name='loop' />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.done()} style={styles.opacity3} >
+                                    {/* <Text>Done</Text> */}
+                                    <Icon name='done' />
                                 </TouchableOpacity>
                             </View>
                             :
-                            <View style={styles.view}>
-                                <TouchableOpacity style={bcolor === 'green' ? styles.opacity1 : styles.opacity2} onPress={() => {
+                            <View style={styles.btn}>
+                                <TouchableOpacity onPress={() => this.goBack()} style={styles.opacity2}>
+                                    <Icon name='arrow-back' />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.opacity2} onPress={() => {
                                     if (cameraIsRecording) {
-                                        this.setState({ cameraIsRecording: false })
-                                        this.camera.stopRecording();
+                                        if (this.camera) {
+                                            this.camera.stopRecording();
+                                            this.setState({ cameraIsRecording: false })
+                                        }
                                     }
                                     else {
                                         this.setState({ cameraIsRecording: true })
@@ -169,12 +202,23 @@ export default class CameraExample extends React.Component {
                                 }}>
                                     {
                                         this.state.cameraIsRecording ?
-                                            <Text>Stop</Text>
+                                            // <Text>Stop</Text>
+                                            <Icon name='videocam-off' />
                                             :
-                                            <Text>Start</Text>
+                                            // <Text>Start</Text>
+                                            <Icon name='videocam' />
+                                        // <Image source={{uri:video}}/>
                                     }
                                 </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.setState({
+                                    type: this.state.type === Camera.Constants.Type.back
+                                        ? Camera.Constants.Type.front
+                                        : Camera.Constants.Type.back,
+                                })} style={styles.opacity2}>
+                                    <Icon name='flip-to-front' />
+                                </TouchableOpacity>
                             </View>
+                        //camera-front  camera-rear","camera-roll"  "videocam","videocam-off"
 
 
                     }
@@ -185,27 +229,52 @@ export default class CameraExample extends React.Component {
 
 const styles = StyleSheet.create({
     opacity1: {
-        left: 150,
+        // left: 0,
         width: 70,
         height: 70,
         borderWidth: 10,
         borderRadius: 70,
         borderColor: 'red',
         backgroundColor: 'blue',
-    },
-    opacity2: {
-        left: 150,
-        width: 70,
-        height: 70,
-        borderWidth: 10,
-        borderRadius: 70,
-        borderColor: 'grey',
-        backgroundColor: 'white',
-    },
-    view: {
-        // flex: 0.1,
-
         textAlign: 'center',
         justifyContent: 'center'
+    },
+    opacity2: {
+        // left: 0,
+        width: 70,
+        height: 50,
+        // borderWidth: 10,
+        borderRadius: 70,
+        borderColor: 'white',
+        backgroundColor: 'white',
+        textAlign: 'center',
+        justifyContent: 'center'
+    },
+
+    opacity3: {
+        // left: 170,
+        width: 70,
+        height: 50,
+        // borderWidth: 10,
+        // borderRadius: 70,
+        // borderColor: 'grey',
+        borderRadius: 70,
+        borderColor: 'white',
+        backgroundColor: 'white',
+        textAlign: 'center',
+        justifyContent: 'center'
+
+    },
+    View: {
+        flex: 0.1,
+        textAlign: 'center',
+        justifyContent: 'center'
+    },
+    btn: {
+        // flex: 1,
+        flexDirection: 'row',
+        // textAlign: 'center',
+        justifyContent: 'space-evenly',
+        left: 0
     }
 })

@@ -11,6 +11,9 @@ import {
   Platform,
   Dimensions
 } from "react-native";
+import VideoPlayer from '@expo/videoplayer';
+import { Video } from 'expo';
+
 import {
   Container,
   Header,
@@ -157,7 +160,7 @@ class PostDetailsScreen extends Component {
     } catch (error) {
       console.error(error);
     }
-
+    console.log(post,'post here idhar')
 
     this.props.mountCurrentPost(post, post.postId, this.props.userInfo.userId);
   }
@@ -323,15 +326,27 @@ class PostDetailsScreen extends Component {
               />
             )}
 
-            {(post.type === "video" || post.type !== "image") && (
-              <Expo.Video
-                style={[{ width: "100%", height: "100%" }]}
-                rate={1.0}
-                volume={1.0}
-                isMuted={false}
-                resizeMode="cover"
-                shouldPlay
-                source={{ uri: post.mediaUri }}
+            {(post.type === "video") && (
+              // <Expo.Video
+              //   style={[{ width: "100%", height: "100%" }]}
+              //   rate={1.0}
+              //   volume={1.0}
+              //   isMuted={false}
+              //   resizeMode="cover"
+              //   shouldPlay
+              //   source={{ uri: post.mediaUri }}
+              // />
+              <VideoPlayer
+                videoProps={{
+                  resizeMode: Video.RESIZE_MODE_CONTAIN,
+                  source: {
+                    uri: post.mediaUri,
+                  },
+                  // shouldPlay
+                }}
+                // switchToLandscape={() => this.landScape()}
+                isPortrait={true}
+                playFromPositionMillis={0}
               />
             )}
 
@@ -387,7 +402,18 @@ class PostDetailsScreen extends Component {
                   }
                 ]}
               >
-                {`${this.state.location.city}`}
+                {`${this.state.location.city + ','}`}
+              </Text>
+              <Text
+                style={[
+                  {
+                    color: "rgb(115, 114, 119)",
+                    fontSize: 12,
+                    marginLeft: 4,
+                  }
+                ]}
+              >
+                {`${this.state.location.country}`}
               </Text>
             </View>
           </View>
