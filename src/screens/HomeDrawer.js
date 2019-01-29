@@ -8,6 +8,8 @@ import { connect } from "react-redux";
 
 class HomeDrawer extends Component {
     logout() {
+        console.log('ghjvhnvnhs');
+        
         firebase.auth().signOut()
         const resetAction = StackActions.reset({
             index: 0,
@@ -27,7 +29,7 @@ class HomeDrawer extends Component {
             <View style={styles.container}>
                 <DrawerItems {...this.props} />
                 <View style={styles.settingsContainer}>
-                    <TouchableOpacity onPress={() => { this.props.navigation.navigate('ContactUs') }}>
+                    {/* <TouchableOpacity onPress={() => { this.props.navigation.navigate('ContactUs') }}>
                         <Text style={styles.itemText}>Contact us</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { this.props.navigation.navigate('AboutUs') }}>
@@ -38,7 +40,7 @@ class HomeDrawer extends Component {
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { Clipboard.setString('https://www.live.com') }}>
                         <Text style={styles.itemText}>Rate us!!</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <TouchableOpacity onPress={() => this.logout()}>
                         <Text style={[styles.itemText, { color: 'red' }]}>Log Out</Text>
                     </TouchableOpacity>
@@ -62,18 +64,19 @@ export default connect(() => { return {} }, mapDispatchToProps)(HomeDrawer);
     },
     settingsContainer: {
         position: 'absolute',
-        bottom: 2,
+        bottom: 0,
         left: 0,
         right: 0,
         // top: 25,
         // paddingTop: 140,
         paddingLeft: 18,
+        paddingBottom: 18,
         justifyContent:'center',
         textAlign:'center'
     },
     itemText: {
         fontWeight: 'bold',
         fontSize: 14,
-        marginTop: 6
+        // marginTop: 6
     },
  })

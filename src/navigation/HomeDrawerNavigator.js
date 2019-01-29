@@ -16,7 +16,8 @@ export const HomeDrawerNavigator = createDrawerNavigator(
     },
     GoogleMap: { screen: GoogleMapcreen },
     CreatePost: { screen: CreatePostScreen },
-    camera:{screen:camera},
+    // camera:{screen:camera},
+    
   },
   {
     drawerWidth: 300,

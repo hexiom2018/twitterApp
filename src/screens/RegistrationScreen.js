@@ -112,17 +112,17 @@ class RegistrationScreen extends Component {
 
 
 
-  confirmCode = () => {
-    const { codeInput, confirmResult } = this.state;
+  // confirmCode = () => {
+  //   const { codeInput, confirmResult } = this.state;
 
-    if (confirmResult && codeInput.length) {
-      confirmResult.confirm(codeInput)
-        .then((user) => {
-          this.setState({ message: 'Code Confirmed!' });
-        })
-        .catch(error => this.setState({ message: `Code Confirm Error: ${error.message}` }));
-    }
-  };
+  //   if (confirmResult && codeInput.length) {
+  //     confirmResult.confirm(codeInput)
+  //       .then((user) => {
+  //         this.setState({ message: 'Code Confirmed!' });
+  //       })
+  //       .catch(error => this.setState({ message: `Code Confirm Error: ${error.message}` }));
+  //   }
+  // };
 
   signOut = () => {
     firebase.auth().signOut();
@@ -131,23 +131,23 @@ class RegistrationScreen extends Component {
     title: "registration",
     header: null
   };
-  renderPhoneNumberInput() {
-    const { phoneNumber } = this.state;
+  // renderPhoneNumberInput() {
+  //   const { phoneNumber } = this.state;
 
-    return (
-      <View style={{ padding: 25 }}>
-        <Text>Enter phone number:</Text>
-        <TextInput
-          autoFocus
-          style={{ height: 40, marginTop: 15, marginBottom: 15 }}
-          onChangeText={value => this.setState({ phoneNumber: value })}
-          placeholder={'Phone number ... '}
-          value={phoneNumber}
-        />
-        <Button title="Sign In" color="green" onPress={this.signIn} />
-      </View>
-    );
-  }
+  //   return (
+  //     <View style={{ padding: 25 }}>
+  //       <Text>Enter phone number:</Text>
+  //       <TextInput
+  //         autoFocus
+  //         style={{ height: 40, marginTop: 15, marginBottom: 15 }}
+  //         onChangeText={value => this.setState({ phoneNumber: value })}
+  //         placeholder={'Phone number ... '}
+  //         value={phoneNumber}
+  //       />
+  //       <Button title="Sign In" color="green" onPress={this.signIn} />
+  //     </View>
+  //   );
+  // }
 
   renderMessage() {
     const { message } = this.state;
@@ -258,7 +258,7 @@ class RegistrationScreen extends Component {
               {/* <View /> */}
             </View>
           </View>
-
+{/* 
           <View style={{ flex: 1 }}>
 
             {!user && !confirmResult && this.renderPhoneNumberInput()}
@@ -283,7 +283,7 @@ class RegistrationScreen extends Component {
                 <Button title="Sign Out" color="red" onPress={this.signOut} />
               </View>
             )}
-          </View>
+          </View> */}
         </Content>
       </Container>
     );

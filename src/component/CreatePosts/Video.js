@@ -60,7 +60,7 @@ export default class ImagePickerExample extends React.Component {
                 errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
             });
         } else {
-            console.log('Run***********')
+            // console.log('Run***********')
             this._getLocationAsync();
         }
     }

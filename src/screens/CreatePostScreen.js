@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         flexDirection: 'row',
         paddingHorizontal: 15,
-        paddingVertical: 15
+        paddingVertical: 15,
+        width: '100%'
 
     }
 });
@@ -198,7 +199,9 @@ class CreatePostScreen extends Component {
             base64: false,
         });
         // console.log(result,'picture ka result')
-        this.setState({ selectedImage: result, userVideo: false, mediaPicker: result });
+        const { change } = this.props
+        change('mediaPicker', result)
+        this.setState({ selectedImage: result, userVideo: false, mediaPicker: result, userImage: true, });
     };
 
 
@@ -557,12 +560,13 @@ class CreatePostScreen extends Component {
                                         <Button
                                             onPress={this.useLibraryHandler}
                                         >
-                                            <Text>
+                                            <Text >
                                                 <Image
                                                     source={require('../../assets/gallery.png')}
                                                     // fadeDuration={0}
-                                                    style={{ width: 60, height: 60, marginTop: 20 }}
-                                                /> Choose from Gallery
+                                                    style={{ width: 60, height: 60,  }}
+                                                />
+                                                Choose from Gallery
                                             </Text>
                                         </Button>
                                     </View>

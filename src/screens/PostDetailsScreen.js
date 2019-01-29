@@ -316,7 +316,7 @@ class PostDetailsScreen extends Component {
         <View style={{ flex: 1, justifyContent: "space-evenly" }}>
           <Animated.View style={[{
             width: "98%",
-            height: Platform.OS === "ios" ? "35%" : this.state.androidImageHeight,// "35%",
+            height: Platform.OS === "ios" ? "43%" : this.state.androidImageHeight,// "35%",
             borderRadius: 5, marginTop: 5, overflow: 'hidden', alignSelf: 'center'
           }]}>
             {post.type === "image" && (

@@ -171,16 +171,16 @@ export default class CameraExample extends React.Component {
                         uri ?
                             <View style={styles.btn}>
                                 <TouchableOpacity onPress={() => this.goBack()} style={styles.opacity3}>
-                                    {/* <Text>Back</Text> */}
-                                    <Icon name='arrow-back' />
+                                    <Text>Back</Text>
+                                    {/* <Icon name='arrow-back' /> */}
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.opacity3} onPress={() => { this.setState({ uri: '' }) }}>
-                                    {/* <Text>Retake</Text> */}
+                                    <Text>Retake</Text>
                                     <Icon name='loop' />
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.done()} style={styles.opacity3} >
-                                    {/* <Text>Done</Text> */}
-                                    <Icon name='done' />
+                                    <Text>Done</Text>
+                                    {/* <Icon name='done' /> */}
                                 </TouchableOpacity>
                             </View>
                             :
